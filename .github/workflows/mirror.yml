@@ -1,4 +1,4 @@
-name: Mirror BusyBox (tagged by version)
+name: Mirror BusyBox
 
 on:
     workflow_dispatch:
@@ -9,45 +9,13 @@ on:
         - cron: '0 0 * * *'
 
 jobs:
-  mirror:
-    runs-on: ubuntu-latest
-
+  mirror-busybox:
+    uses: ./.github/workflows/mirror-generic.yml
+    with:
+      source_image: docker.io/library/busybox
+      registry: ghcr.io
+      target_package: ${{ github.repository_owner }}/busybox
+      version_regex: '\d+\.\d+(\.\d+)?'
     permissions:
       packages: write
       contents: read
-
-    steps:
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        
-      - name: Log in to GHCR
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
-      - name: Get BusyBox version from image
-        id: get_version
-        run: |
-          VERSION=$(docker run --rm busybox:latest busybox | head -n 1 | grep -oP '\d+\.\d+(\.\d+)?')
-          echo "busybox_version=${VERSION}" >> $GITHUB_OUTPUT
-
-      - name: Check if version already exists on GHCR
-        id: check_exists
-        run: |
-          VERSION=${{ steps.get_version.outputs.busybox_version }}
-          if docker buildx imagetools inspect ghcr.io/${{ github.repository_owner }}/busybox:$VERSION >/dev/null 2>&1; then
-            echo "Image tag $VERSION already exists on GHCR. Skipping push."
-            echo "skip_push=true" >> $GITHUB_OUTPUT
-          else
-            echo "Image tag $VERSION not found on GHCR. Proceeding with push."
-            echo "skip_push=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Tag and push to GHCR (only if not already pushed)
-        if: steps.check_exists.outputs.skip_push == 'false'
-        run: |
-          VERSION=${{ steps.get_version.outputs.busybox_version }}
-          # Copy manifest list and all referenced manifests
-          docker buildx imagetools create \
-            --tag ghcr.io/${{ github.repository_owner }}/busybox:$VERSION \
-            docker.io/library/busybox:$VERSION
-          # Verify the copy
-          docker buildx imagetools inspect ghcr.io/${{ github.repository_owner }}/busybox:$VERSION
