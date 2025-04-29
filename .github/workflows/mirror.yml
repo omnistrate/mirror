@@ -23,7 +23,7 @@ jobs:
       - name: Get BusyBox version from image
         id: get_version
         run: |
-          VERSION=$(docker run --rm --platform linux/amd64 busybox:latest busybox | head -n 1 | grep -oP '\d+\.\d+(\.\d+)?')
+          VERSION=$(docker run --rm busybox:latest busybox | head -n 1 | grep -oP '\d+\.\d+(\.\d+)?')
           echo "busybox_version=${VERSION}" >> $GITHUB_OUTPUT
 
       - name: Check if version already exists on GHCR
