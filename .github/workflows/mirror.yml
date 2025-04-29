@@ -1,0 +1,47 @@
+name: Mirror BusyBox (tagged by version)
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+
+    permissions:
+      packages: write
+      contents: read
+
+    steps:
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Pull BusyBox:latest from Docker Hub
+        run: docker pull busybox:latest
+
+      - name: Get BusyBox version from image
+        id: get_version
+        run: |
+          VERSION=$(docker run --rm busybox:latest busybox | head -n 1 | grep -oP 'v[0-9]+\.[0-9]+(\.[0-9]+)?')
+          echo "busybox_version=${VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Check if version already exists on GHCR
+        id: check_exists
+        run: |
+          VERSION=${{ steps.get_version.outputs.busybox_version }}
+          GHCR_API="https://ghcr.io/v2/${{ github.repository_owner }}/busybox/tags/list"
+          EXISTS=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" $GHCR_API | jq -r ".tags[]?" | grep -Fx "$VERSION" || true)
+          if [ -n "$EXISTS" ]; then
+            echo "Image tag $VERSION already exists on GHCR. Skipping push."
+            echo "skip_push=true" >> $GITHUB_OUTPUT
+          else
+            echo "Image tag $VERSION not found on GHCR. Proceeding with push."
+            echo "skip_push=false" >> $GITHUB_OUTPUT
+
+      - name: Tag and push to GHCR (only if not already pushed)
+        if: steps.check_exists.outputs.skip_push == 'false'
+        run: |
+          VERSION=${{ steps.get_version.outputs.busybox_version }}
+          docker tag busybox:latest ghcr.io/${{ github.repository_owner }}/busybox:$VERSION
+          docker push ghcr.io/${{ github.repository_owner }}/busybox:$VERSION
