@@ -52,4 +52,4 @@ jobs:
           VERSION=${{ steps.get_version.outputs.busybox_version }}
           docker buildx imagetools create \
             --tag ghcr.io/${{ github.repository_owner }}/busybox:$VERSION \
-            docker.io/library/busybox:latest
+            docker.io/library/busybox:$VERSION
