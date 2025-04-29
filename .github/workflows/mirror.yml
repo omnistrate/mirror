@@ -17,18 +17,18 @@ jobs:
       contents: read
 
     steps:
-      - name: Log in to GHCR
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
-      - name: Pull BusyBox for multiple architectures
+      - name: Log in to registries
         run: |
-          docker pull busybox:latest
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker login -u ${{ github.actor }}
 
       - name: Get BusyBox version from image
         id: get_version
         run: |
-          VERSION=$(docker run --rm busybox:latest busybox | head -n 1 | grep -oP '\d+\.\d+(\.\d+)?')
+          VERSION=$(docker run --rm --platform linux/amd64 busybox:latest busybox | head -n 1 | grep -oP '\d+\.\d+(\.\d+)?')
           echo "busybox_version=${VERSION}" >> $GITHUB_OUTPUT
+          # Verify multi-arch support
+          docker buildx imagetools inspect busybox:latest
 
       - name: Check if version already exists on GHCR
         id: check_exists
@@ -51,6 +51,9 @@ jobs:
         if: steps.check_exists.outputs.skip_push == 'false'
         run: |
           VERSION=${{ steps.get_version.outputs.busybox_version }}
+          # Copy manifest list and all referenced manifests
           docker buildx imagetools create \
             --tag ghcr.io/${{ github.repository_owner }}/busybox:$VERSION \
-            busybox:latest
+            docker.io/library/busybox:$VERSION
+          # Verify the copy
+          docker buildx imagetools inspect ghcr.io/${{ github.repository_owner }}/busybox:$VERSION
