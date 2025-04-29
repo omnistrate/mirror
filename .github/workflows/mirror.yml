@@ -27,8 +27,6 @@ jobs:
         run: |
           VERSION=$(docker run --rm --platform linux/amd64 busybox:latest busybox | head -n 1 | grep -oP '\d+\.\d+(\.\d+)?')
           echo "busybox_version=${VERSION}" >> $GITHUB_OUTPUT
-          # Verify multi-arch support
-          docker buildx imagetools inspect busybox:latest
 
       - name: Check if version already exists on GHCR
         id: check_exists
