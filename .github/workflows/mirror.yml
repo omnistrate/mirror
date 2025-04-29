@@ -41,6 +41,7 @@ jobs:
           else
             echo "Image tag $VERSION not found on GHCR. Proceeding with push."
             echo "skip_push=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Tag and push to GHCR (only if not already pushed)
         if: steps.check_exists.outputs.skip_push == 'false'
