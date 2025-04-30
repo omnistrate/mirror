@@ -10,7 +10,7 @@ on:
 
 jobs:
   mirror-alpine:
-    uses: ./.github/workflows/mirror-generic.yml
+    uses: ./.github/workflows/mirror.yml
     with:
       source_image: docker.io/library/alpine=
       target_package: ${{ github.repository_owner }}/alpine

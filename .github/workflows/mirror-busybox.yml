@@ -10,7 +10,7 @@ on:
 
 jobs:
   mirror-busybox:
-    uses: ./.github/workflows/mirror-generic.yml
+    uses: ./.github/workflows/mirror.yml
     with:
       source_image: docker.io/library/busybox
       target_package: ${{ github.repository_owner }}/busybox
