@@ -33,13 +33,17 @@ jobs:
       - name: Get image version
         id: get_version
         run: |
-          VERSION=$(docker buildx imagetools inspect ${{ inputs.source_image }}:latest | grep -oP 'org\.opencontainers\.image\.version:\s+\K[0-9]+\.[0-9]+\.[0-9]+(?=-.+)?')
+          # Extract version and handle any suffix
+          FULL_VERSION=$(docker buildx imagetools inspect ${{ inputs.source_image }}:latest | grep -oP 'org\.opencontainers\.image\.version:\s+\K[^\s]+' | head -n1)
+          # Extract just the version numbers
+          VERSION=$(echo "$FULL_VERSION" | grep -oP '^[0-9]+\.[0-9]+(\.[0-9]+)?')
           if [ -z "$VERSION" ]; then
             echo "Failed to extract version from image inspect output"
             docker buildx imagetools inspect ${{ inputs.source_image }}:latest
             exit 1
           fi
-          echo "image_version='${VERSION}'" >> $GITHUB_OUTPUT
+          echo "Extracted version: $VERSION"
+          echo "image_version=${VERSION}" >> $GITHUB_OUTPUT
 
       - name: Check if version already exists
         id: check_exists
