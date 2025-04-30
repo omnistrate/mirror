@@ -1,0 +1,21 @@
+name: Mirror Alpine Linux
+
+on:
+    workflow_dispatch:
+    pull_request:
+        branches:
+            - main
+    schedule:
+        - cron: '0 0 * * *'
+
+jobs:
+  mirror-alpine:
+    uses: ./.github/workflows/mirror-generic.yml
+    with:
+      source_image: docker.io/library/alpine
+      registry: ghcr.io
+      target_package: ${{ github.repository_owner }}/alpine
+      version_regex: '\d+\.\d+\.\d+'
+    permissions:
+      packages: write
+      contents: read
