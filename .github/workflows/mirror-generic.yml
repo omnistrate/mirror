@@ -7,19 +7,13 @@ on:
         required: true
         type: string
         description: "Source Docker image to mirror (e.g. docker.io/library/busybox)"
-      registry:
-        required: true
-        type: string
-        description: "Target registry (e.g. ghcr.io)"
       target_package:
         required: true
         type: string
         description: "Target package name without registry (e.g. owner/image)"
-      version_regex:
-        required: false
-        type: string
-        description: "Regex to extract version from source image inspect output"
-        default: '\d+\.\d+(\.\d+)?'
+
+env: 
+    registry: ghcr.io
 
 jobs:
   mirror:
@@ -34,19 +28,19 @@ jobs:
         uses: docker/setup-buildx-action@v3
         
       - name: Log in to registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ inputs.registry }} -u ${{ github.actor }} --password-stdin
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.registry }} -u ${{ github.actor }} --password-stdin
 
       - name: Get image version
         id: get_version
         run: |
-          VERSION=$(docker buildx imagetools inspect ${{ inputs.source_image }}:latest | grep -oP 'Name:\s+.*:\K${{ inputs.version_regex }}')
+          VERSION=$(docker buildx imagetools inspect ${{ inputs.source_image }}:latest | grep -oP '\d+\.\d+(\.\d+)?')
           echo "image_version=${VERSION}" >> $GITHUB_OUTPUT
 
       - name: Check if version already exists
         id: check_exists
         run: |
           VERSION=${{ steps.get_version.outputs.image_version }}
-          if docker buildx imagetools inspect ${{ inputs.registry }}/${{ inputs.target_package }}:$VERSION >/dev/null 2>&1; then
+          if docker buildx imagetools inspect ${{ env.registry }}/${{ inputs.target_package }}:$VERSION >/dev/null 2>&1; then
             echo "Image tag $VERSION already exists. Skipping push."
             echo "skip_push=true" >> $GITHUB_OUTPUT
           else
@@ -60,7 +54,7 @@ jobs:
           VERSION=${{ steps.get_version.outputs.image_version }}
           # Copy manifest list and all referenced manifests
           docker buildx imagetools create \
-            --tag ${{ inputs.registry }}/${{ inputs.target_package }}:$VERSION \
+            --tag ${{ env.registry }}/${{ inputs.target_package }}:$VERSION \
             ${{ inputs.source_image }}:$VERSION
           # Verify the copy
-          docker buildx imagetools inspect ${{ inputs.registry }}/${{ inputs.target_package }}:$VERSION
+          docker buildx imagetools inspect ${{ env.registry }}/${{ inputs.target_package }}:$VERSION

@@ -13,7 +13,9 @@ jobs:
     uses: ./.github/workflows/mirror-generic.yml
     with:
       source_image: docker.io/library/busybox
+      registry: ghcr.io
       target_package: ${{ github.repository_owner }}/busybox
+      version_regex: '\d+\.\d+(\.\d+)?'
     permissions:
       packages: write
       contents: read
