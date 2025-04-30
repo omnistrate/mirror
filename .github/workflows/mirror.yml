@@ -39,7 +39,7 @@ jobs:
             docker buildx imagetools inspect ${{ inputs.source_image }}:latest
             exit 1
           fi
-          echo "image_version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "image_version='${VERSION}'" >> $GITHUB_OUTPUT
 
       - name: Check if version already exists
         id: check_exists
