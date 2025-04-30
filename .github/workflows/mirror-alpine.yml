@@ -13,7 +13,7 @@ jobs:
     uses: ./.github/workflows/mirror-generic.yml
     with:
       source_image: docker.io/library/alpine=
-      target_package: ${{ github.repository_owner }}/alpine=
+      target_package: ${{ github.repository_owner }}/alpine
     permissions:
       packages: write
       contents: read
