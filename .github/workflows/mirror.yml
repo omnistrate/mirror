@@ -1,19 +1,60 @@
-name: Mirror BusyBox
+name: Generic Docker Image Mirror
 
 on:
-    workflow_dispatch:
-    pull_request:
-        branches:
-            - main
-    schedule:
-        - cron: '0 0 * * *'
+  workflow_call:
+    inputs:
+      source_image:
+        required: true
+        type: string
+        description: "Source Docker image to mirror (e.g. docker.io/library/busybox)"
+      target_package:
+        required: true
+        type: string
+        description: "Target package name without registry (e.g. owner/image)"
+
+env: 
+    registry: ghcr.io
 
 jobs:
-  mirror-busybox:
-    uses: ./.github/workflows/mirror-generic.yml
-    with:
-      source_image: docker.io/library/busybox
-      target_package: ${{ github.repository_owner }}/busybox
+  mirror:
+    runs-on: ubuntu-latest
+
     permissions:
       packages: write
       contents: read
+
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        
+      - name: Log in to registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.registry }} -u ${{ github.actor }} --password-stdin
+
+      - name: Get image version
+        id: get_version
+        run: |
+          VERSION=$(docker buildx imagetools inspect ${{ inputs.source_image }}:latest | grep -oP '\d+\.\d+(\.\d+)?')
+          echo "image_version=${VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Check if version already exists
+        id: check_exists
+        run: |
+          VERSION=${{ steps.get_version.outputs.image_version }}
+          if docker buildx imagetools inspect ${{ env.registry }}/${{ inputs.target_package }}:$VERSION >/dev/null 2>&1; then
+            echo "Image tag $VERSION already exists. Skipping push."
+            echo "skip_push=true" >> $GITHUB_OUTPUT
+          else
+            echo "Image tag $VERSION not found. Proceeding with push."
+            echo "skip_push=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Tag and push to registry
+        if: steps.check_exists.outputs.skip_push == 'false'
+        run: |
+          VERSION=${{ steps.get_version.outputs.image_version }}
+          # Copy manifest list and all referenced manifests
+          docker buildx imagetools create \
+            --tag ${{ env.registry }}/${{ inputs.target_package }}:$VERSION \
+            ${{ inputs.source_image }}:$VERSION
+          # Verify the copy
+          docker buildx imagetools inspect ${{ env.registry }}/${{ inputs.target_package }}:$VERSION
