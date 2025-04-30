@@ -33,7 +33,7 @@ jobs:
       - name: Get image version
         id: get_version
         run: |
-          VERSION=$(docker buildx imagetools inspect ${{ inputs.source_image }}:latest | grep -oP "Name:.*?:\K\d+\.\d+(\.\d+)?")
+          VERSION=$(docker buildx imagetools inspect ${{ inputs.source_image }}:latest | grep -oP 'org\.opencontainers\.image\.version:\s+\K[0-9]+\.[0-9]+\.[0-9]+(?=-.+)?')
           if [ -z "$VERSION" ]; then
             echo "Failed to extract version from image inspect output"
             docker buildx imagetools inspect ${{ inputs.source_image }}:latest
