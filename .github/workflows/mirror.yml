@@ -33,16 +33,45 @@ jobs:
       - name: Get image version
         id: get_version
         run: |
-          # Extract version and handle any suffix
+          # Try different methods to get the version
+          
+          # Method 1: Try to get version from image labels
+          echo "Attempting to get version from image labels..."
           FULL_VERSION=$(docker buildx imagetools inspect ${{ inputs.source_image }}:latest | grep -oP 'org\.opencontainers\.image\.version:\s+\K[^\s]+' | head -n1)
-          # Extract just the version numbers
-          VERSION=$(echo "$FULL_VERSION" | grep -oP '^[0-9]+\.[0-9]+(\.[0-9]+)?')
-          if [ -z "$VERSION" ]; then
-            echo "Failed to extract version from image inspect output"
-            docker buildx imagetools inspect ${{ inputs.source_image }}:latest
-            exit 1
+          
+          # Method 2: If no version in labels, try to get available tags
+          if [ -z "$FULL_VERSION" ]; then
+            echo "No version in image labels, trying to get tags..."
+            # Pull the image first to ensure we have access to it
+            docker pull ${{ inputs.source_image }}:latest
+            
+            # Get all tags for the image and look for version-like tags
+            ALL_TAGS=$(docker buildx imagetools inspect ${{ inputs.source_image }}:latest | grep -oP 'Tags:\s+\K.*' || true)
+            
+            # Look for semantic version tags (e.g., 1.2.3)
+            FULL_VERSION=$(echo "$ALL_TAGS" | grep -oP '\d+\.\d+\.\d+' | head -n1)
+            
+            # If no semver found, try simpler version format (e.g., 1.2)
+            if [ -z "$FULL_VERSION" ]; then
+              FULL_VERSION=$(echo "$ALL_TAGS" | grep -oP '\d+\.\d+' | head -n1)
+            fi
           fi
-          echo "Extracted version: $VERSION"
+          
+          # Extract just the version numbers if we found a version
+          if [ -n "$FULL_VERSION" ]; then
+            VERSION=$(echo "$FULL_VERSION" | grep -oP '^[0-9]+\.[0-9]+(\.[0-9]+)?')
+          fi
+          
+          # If we still don't have a version, use the digest as fallback
+          if [ -z "$VERSION" ]; then
+            echo "Could not determine version from tags, using digest..."
+            DIGEST=$(docker buildx imagetools inspect ${{ inputs.source_image }}:latest | grep -oP 'Digest:\s+\K[^\s]+' | head -n1)
+            # Use first 8 characters of digest as version
+            VERSION=$(echo "$DIGEST" | cut -d: -f2 | head -c8)
+            echo "Using digest-based version: $VERSION"
+          fi
+          
+          echo "Final version: $VERSION"
           echo "image_version=${VERSION}" >> $GITHUB_OUTPUT
 
       - name: Check if version already exists
