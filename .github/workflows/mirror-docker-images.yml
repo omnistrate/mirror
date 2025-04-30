@@ -1,0 +1,28 @@
+name: Mirror Docker Images
+
+on:
+    workflow_dispatch:
+    pull_request:
+        branches:
+            - main
+    schedule:
+        - cron: '0 0 * * *'
+
+jobs:
+  mirror-alpine:
+    uses: ./.github/workflows/mirror.yml
+    with:
+      source_image: docker.io/library/alpine
+      target_package: ${{ github.repository_owner }}/alpine
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-busybox:
+    uses: ./.github/workflows/mirror.yml
+    with:
+      source_image: docker.io/library/busybox
+      target_package: ${{ github.repository_owner }}/busybox
+    permissions:
+      packages: write
+      contents: read
