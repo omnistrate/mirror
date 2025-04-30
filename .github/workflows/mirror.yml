@@ -33,7 +33,12 @@ jobs:
       - name: Get image version
         id: get_version
         run: |
-          VERSION=$(docker buildx imagetools inspect ${{ inputs.source_image }}:latest | grep -oP '\d+\.\d+(\.\d+)?')
+          VERSION=$(docker buildx imagetools inspect ${{ inputs.source_image }}:latest | grep -oP "Name:.*?:\K\d+\.\d+(\.\d+)?")
+          if [ -z "$VERSION" ]; then
+            echo "Failed to extract version from image inspect output"
+            docker buildx imagetools inspect ${{ inputs.source_image }}:latest
+            exit 1
+          fi
           echo "image_version=${VERSION}" >> $GITHUB_OUTPUT
 
       - name: Check if version already exists

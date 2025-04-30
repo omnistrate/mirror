@@ -10,9 +10,10 @@ on:
 
 jobs:
   mirror-alpine:
-    uses: ./.github/workflows/mirror.yml
+    uses: ./.github/workflows/mirror-generic.yml
     with:
-      source_image: docker.io/library/alpine=
+      source_image: docker.io/library/alpine
+      registry: ghcr.io
       target_package: ${{ github.repository_owner }}/alpine
     permissions:
       packages: write
