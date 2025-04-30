@@ -50,14 +50,9 @@ jobs:
         if: steps.check_exists.outputs.skip_push == 'false'
         run: |
           VERSION=${{ inputs.tag }}
-          echo "Pushing version: $VERSION"
-          
-          # Tag and push using Docker commands
-          docker tag ${{ inputs.source_image }}:${{ inputs.tag }} ${{ env.registry }}/${{ inputs.target_package }}:$VERSION
-          docker push ${{ env.registry }}/${{ inputs.target_package }}:$VERSION
-          
-          # Also update the latest tag
-          docker tag ${{ inputs.source_image }}:${{ inputs.tag }} ${{ env.registry }}/${{ inputs.target_package }}:latest
-          docker push ${{ env.registry }}/${{ inputs.target_package }}:latest
-          
-          echo "Successfully pushed tags: $VERSION and latest"
+          # Copy manifest list and all referenced manifests
+          docker buildx imagetools create \
+            --tag ${{ env.registry }}/${{ inputs.target_package }}:$VERSION \
+            ${{ inputs.source_image }}:$VERSION
+          # Verify the copy
+          docker buildx imagetools inspect ${{ env.registry }}/${{ inputs.target_package }}:$VERSION
