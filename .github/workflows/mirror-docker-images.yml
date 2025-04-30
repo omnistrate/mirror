@@ -44,7 +44,7 @@ jobs:
   mirror-aws-cli:
     uses: ./.github/workflows/mirror.yml
     with:
-      source_image: docker.io/
+      source_image: docker.io/amazon/aws-cli
       tag: 2.27.4
       target_package: ${{ github.repository_owner }}/aws-cli
     permissions:
