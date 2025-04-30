@@ -11,6 +11,10 @@ on:
         required: true
         type: string
         description: "Target package name without registry (e.g. owner/image)"
+      tag:
+        required: true
+        type: string
+        description: "Version tag of the source image to mirror"
 
 env: 
     registry: ghcr.io
@@ -30,59 +34,10 @@ jobs:
       - name: Log in to registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.registry }} -u ${{ github.actor }} --password-stdin
 
-      - name: Get image version
-        id: get_version
-        run: |
-          # Pull the image first to ensure we have access to it
-          docker pull ${{ inputs.source_image }}:latest
-          
-          # Special handling for kubectl image
-          if [[ "${{ inputs.source_image }}" == *"kubectl"* ]]; then
-            # Try to get kubectl version directly from the image
-            VERSION=$(docker run --rm ${{ inputs.source_image }}:latest version --client --short | cut -d ' ' -f3)
-            if [ -n "$VERSION" ]; then
-              # Remove 'v' prefix if present
-              VERSION=${VERSION#v}
-              echo "Found kubectl version: $VERSION"
-              echo "image_version=${VERSION}" >> $GITHUB_OUTPUT
-              exit 0
-            fi
-          fi
-          
-          # General version detection logic
-          # Try to get version from image labels
-          echo "Attempting to get version from image labels..."
-          FULL_VERSION=$(docker image inspect ${{ inputs.source_image }}:latest | grep -oP '"org.opencontainers.image.version":\s*"\K[^"]+' || true)
-          
-          if [ -z "$FULL_VERSION" ]; then
-            # Try to get version from image history
-            echo "Attempting to get version from image history..."
-            IMAGE_HISTORY=$(docker history --no-trunc ${{ inputs.source_image }}:latest)
-            FULL_VERSION=$(echo "$IMAGE_HISTORY" | grep -oP '\b\d+\.\d+\.\d+\b' | head -n1)
-          fi
-          
-          if [ -z "$FULL_VERSION" ]; then
-            # Try to get version from repository tags
-            echo "Attempting to get version from repository tags..."
-            ALL_TAGS=$(curl -s "https://registry.hub.docker.com/v2/repositories/${SOURCE_IMAGE}/tags" | grep -oP '"name":\s*"\K[^"]+' || true)
-            FULL_VERSION=$(echo "$ALL_TAGS" | grep -oP '\b\d+\.\d+\.\d+\b' | head -n1)
-          fi
-          
-          if [ -n "$FULL_VERSION" ]; then
-            VERSION=$FULL_VERSION
-          else
-            # Use timestamp as fallback version
-            VERSION=$(date +%Y%m%d.%H%M%S)
-            echo "Using timestamp as version: $VERSION"
-          fi
-          
-          echo "Final version: $VERSION"
-          echo "image_version=${VERSION}" >> $GITHUB_OUTPUT
-
       - name: Check if version already exists
         id: check_exists
         run: |
-          VERSION=${{ steps.get_version.outputs.image_version }}
+          VERSION=${{ inputs.tag }}
           if docker buildx imagetools inspect ${{ env.registry }}/${{ inputs.target_package }}:$VERSION >/dev/null 2>&1; then
             echo "Image tag $VERSION already exists. Skipping push."
             echo "skip_push=true" >> $GITHUB_OUTPUT
@@ -94,15 +49,15 @@ jobs:
       - name: Tag and push to registry
         if: steps.check_exists.outputs.skip_push == 'false'
         run: |
-          VERSION=${{ steps.get_version.outputs.image_version }}
+          VERSION=${{ inputs.tag }}
           echo "Pushing version: $VERSION"
           
           # Tag and push using Docker commands
-          docker tag ${{ inputs.source_image }}:latest ${{ env.registry }}/${{ inputs.target_package }}:$VERSION
+          docker tag ${{ inputs.source_image }}:${{ inputs.tag }} ${{ env.registry }}/${{ inputs.target_package }}:$VERSION
           docker push ${{ env.registry }}/${{ inputs.target_package }}:$VERSION
           
           # Also update the latest tag
-          docker tag ${{ inputs.source_image }}:latest ${{ env.registry }}/${{ inputs.target_package }}:latest
+          docker tag ${{ inputs.source_image }}:${{ inputs.tag }} ${{ env.registry }}/${{ inputs.target_package }}:latest
           docker push ${{ env.registry }}/${{ inputs.target_package }}:latest
           
           echo "Successfully pushed tags: $VERSION and latest"
