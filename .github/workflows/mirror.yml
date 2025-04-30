@@ -11,6 +11,10 @@ on:
         required: true
         type: string
         description: "Target package name without registry (e.g. owner/image)"
+      tag:
+        required: true
+        type: string
+        description: "Version tag of the source image to mirror"
 
 env: 
     registry: ghcr.io
@@ -30,25 +34,10 @@ jobs:
       - name: Log in to registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.registry }} -u ${{ github.actor }} --password-stdin
 
-      - name: Get image version
-        id: get_version
-        run: |
-          # Extract version and handle any suffix
-          FULL_VERSION=$(docker buildx imagetools inspect ${{ inputs.source_image }}:latest | grep -oP 'org\.opencontainers\.image\.version:\s+\K[^\s]+' | head -n1)
-          # Extract just the version numbers
-          VERSION=$(echo "$FULL_VERSION" | grep -oP '^[0-9]+\.[0-9]+(\.[0-9]+)?')
-          if [ -z "$VERSION" ]; then
-            echo "Failed to extract version from image inspect output"
-            docker buildx imagetools inspect ${{ inputs.source_image }}:latest
-            exit 1
-          fi
-          echo "Extracted version: $VERSION"
-          echo "image_version=${VERSION}" >> $GITHUB_OUTPUT
-
       - name: Check if version already exists
         id: check_exists
         run: |
-          VERSION=${{ steps.get_version.outputs.image_version }}
+          VERSION=${{ inputs.tag }}
           if docker buildx imagetools inspect ${{ env.registry }}/${{ inputs.target_package }}:$VERSION >/dev/null 2>&1; then
             echo "Image tag $VERSION already exists. Skipping push."
             echo "skip_push=true" >> $GITHUB_OUTPUT
@@ -60,7 +49,7 @@ jobs:
       - name: Tag and push to registry
         if: steps.check_exists.outputs.skip_push == 'false'
         run: |
-          VERSION=${{ steps.get_version.outputs.image_version }}
+          VERSION=${{ inputs.tag }}
           # Copy manifest list and all referenced manifests
           docker buildx imagetools create \
             --tag ${{ env.registry }}/${{ inputs.target_package }}:$VERSION \

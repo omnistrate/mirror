@@ -2,17 +2,20 @@ name: Mirror Docker Images
 
 on:
     workflow_dispatch:
+    push:
+        branches:
+            - main
     pull_request:
         branches:
             - main
-    schedule:
-        - cron: '0 0 * * *'
+    
 
 jobs:
   mirror-alpine:
     uses: ./.github/workflows/mirror.yml
     with:
       source_image: docker.io/library/alpine
+      tag: 3.21.3
       target_package: ${{ github.repository_owner }}/alpine
     permissions:
       packages: write
@@ -22,7 +25,28 @@ jobs:
     uses: ./.github/workflows/mirror.yml
     with:
       source_image: docker.io/library/busybox
+      tag: 1.37.0
       target_package: ${{ github.repository_owner }}/busybox
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-kubectl:
+    uses: ./.github/workflows/mirror.yml
+    with:
+      source_image: docker.io/bitnami/kubectl
+      tag: 1.33.0
+      target_package: ${{ github.repository_owner }}/kubectl
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-aws-cli:
+    uses: ./.github/workflows/mirror.yml
+    with:
+      source_image: docker.io/amazon/aws-cli
+      tag: 2.27.4
+      target_package: ${{ github.repository_owner }}/aws-cli
     permissions:
       packages: write
       contents: read
