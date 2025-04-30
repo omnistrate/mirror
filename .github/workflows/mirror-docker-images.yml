@@ -26,3 +26,21 @@ jobs:
     permissions:
       packages: write
       contents: read
+
+  mirror-kubectl:
+    uses: ./.github/workflows/mirror.yml
+    with:
+      source_image: docker.io/bitnami/kubectl
+      target_package: ${{ github.repository_owner }}/kubectl
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-aws-cli:
+    uses: ./.github/workflows/mirror.yml
+    with:
+      source_image: docker.io/amazon/aws-cli
+      target_package: ${{ github.repository_owner }}/aws-cli
+    permissions:
+      packages: write
+      contents: read
