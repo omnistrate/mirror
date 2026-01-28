@@ -50,9 +50,9 @@ jobs:
         if: steps.check_exists.outputs.skip_push == 'false'
         run: |
           VERSION=${{ inputs.tag }}
-          # Copy manifest list and all referenced manifests with retry logic
-          MAX_RETRIES=3
-          RETRY_DELAY=10
+          # Copy manifest list and all referenced manifests with exponential backoff
+          MAX_RETRIES=5
+          BASE_DELAY=15
           
           for i in $(seq 1 $MAX_RETRIES); do
             echo "Attempt $i of $MAX_RETRIES..."
@@ -63,8 +63,10 @@ jobs:
               break
             else
               if [ $i -lt $MAX_RETRIES ]; then
-                echo "Push failed, retrying in ${RETRY_DELAY}s..."
-                sleep $RETRY_DELAY
+                # Exponential backoff: delay increases with each retry
+                DELAY=$((BASE_DELAY * (2 ** (i - 1))))
+                echo "Push failed (possibly rate limited), retrying in ${DELAY}s..."
+                sleep $DELAY
               else
                 echo "Failed after $MAX_RETRIES attempts"
                 exit 1
