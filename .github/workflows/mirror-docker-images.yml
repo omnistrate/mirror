@@ -15,7 +15,7 @@ jobs:
     uses: ./.github/workflows/mirror.yml
     with:
       source_image: docker.io/library/alpine
-      tag: 3.22.1
+      tag: 3.23.3
       target_package: ${{ github.repository_owner }}/alpine
     permissions:
       packages: write
@@ -35,7 +35,7 @@ jobs:
     uses: ./.github/workflows/mirror.yml
     with:
       source_image: docker.io/alpine/kubectl
-      tag: 1.34.1
+      tag: 1.34.2
       target_package: ${{ github.repository_owner }}/kubectl
     permissions:
       packages: write
@@ -45,7 +45,7 @@ jobs:
     uses: ./.github/workflows/mirror.yml
     with:
       source_image: docker.io/amazon/aws-cli
-      tag: 2.30.4
+      tag: 2.33.7
       target_package: ${{ github.repository_owner }}/aws-cli
     permissions:
       packages: write
