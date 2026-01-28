@@ -57,6 +57,7 @@ jobs:
           for i in $(seq 1 $MAX_RETRIES); do
             echo "Attempt $i of $MAX_RETRIES..."
             if docker buildx imagetools create \
+              --progress=plain \
               --tag ${{ env.registry }}/${{ inputs.target_package }}:$VERSION \
               ${{ inputs.source_image }}:$VERSION; then
               echo "Successfully pushed image"
