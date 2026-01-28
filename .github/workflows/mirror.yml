@@ -50,9 +50,27 @@ jobs:
         if: steps.check_exists.outputs.skip_push == 'false'
         run: |
           VERSION=${{ inputs.tag }}
-          # Copy manifest list and all referenced manifests
-          docker buildx imagetools create \
-            --tag ${{ env.registry }}/${{ inputs.target_package }}:$VERSION \
-            ${{ inputs.source_image }}:$VERSION
+          # Copy manifest list and all referenced manifests with retry logic
+          MAX_RETRIES=3
+          RETRY_DELAY=10
+          
+          for i in $(seq 1 $MAX_RETRIES); do
+            echo "Attempt $i of $MAX_RETRIES..."
+            if docker buildx imagetools create \
+              --tag ${{ env.registry }}/${{ inputs.target_package }}:$VERSION \
+              ${{ inputs.source_image }}:$VERSION; then
+              echo "Successfully pushed image"
+              break
+            else
+              if [ $i -lt $MAX_RETRIES ]; then
+                echo "Push failed, retrying in ${RETRY_DELAY}s..."
+                sleep $RETRY_DELAY
+              else
+                echo "Failed after $MAX_RETRIES attempts"
+                exit 1
+              fi
+            fi
+          done
+          
           # Verify the copy
           docker buildx imagetools inspect ${{ env.registry }}/${{ inputs.target_package }}:$VERSION
