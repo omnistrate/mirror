@@ -31,6 +31,16 @@ jobs:
       packages: write
       contents: read
 
+  mirror-busybox-grafana:
+    uses: ./.github/workflows/mirror.yml
+    with:
+      source_image: docker.io/library/busybox
+      tag: 1.31.1
+      target_package: ${{ github.repository_owner }}/busybox
+    permissions:
+      packages: write
+      contents: read
+
   mirror-kubectl:
     uses: ./.github/workflows/mirror.yml
     with:
@@ -47,6 +57,16 @@ jobs:
       source_image: docker.io/amazon/aws-cli
       tag: 2.33.7
       target_package: ${{ github.repository_owner }}/aws-cli
+    permissions:
+      packages: write
+      contents: read
+      
+  mirror-grafana:
+    uses: ./.github/workflows/mirror.yml
+    with:
+      source_image: docker.io/grafana/grafana
+      tag: 12.3.1
+      target_package: ${{ github.repository_owner }}/grafana
     permissions:
       packages: write
       contents: read
