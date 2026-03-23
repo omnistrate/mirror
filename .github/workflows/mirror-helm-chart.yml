@@ -1,0 +1,103 @@
+name: Generic Helm Chart Mirror
+
+on:
+  workflow_call:
+    inputs:
+      chart_name:
+        required: true
+        type: string
+        description: "Helm chart name (e.g. redis)"
+      chart_version:
+        required: true
+        type: string
+        description: "Helm chart version to mirror (e.g. 22.0.7)"
+      chart_repo_url:
+        required: true
+        type: string
+        description: "Source OCI registry URL (e.g. oci://registry-1.docker.io/bitnamicharts)"
+      target_package:
+        required: true
+        type: string
+        description: "Target package path without registry (e.g. owner/charts)"
+
+env:
+  registry: ghcr.io
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+
+    permissions:
+      packages: write
+      contents: read
+
+    steps:
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+
+      - name: Log in to target OCI registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ${{ env.registry }} -u ${{ github.actor }} --password-stdin
+
+      - name: Check if chart version already exists
+        id: check_exists
+        run: |
+          if helm pull oci://${{ env.registry }}/${{ inputs.target_package }}/${{ inputs.chart_name }} --version ${{ inputs.chart_version }} 2>/dev/null; then
+            echo "Chart ${{ inputs.chart_name }}:${{ inputs.chart_version }} already exists in target. Skipping push."
+            echo "skip_push=true" >> $GITHUB_OUTPUT
+            rm -f ${{ inputs.chart_name }}-${{ inputs.chart_version }}.tgz
+          else
+            echo "Chart version not found in target. Proceeding with mirror."
+            echo "skip_push=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Pull chart from source
+        if: steps.check_exists.outputs.skip_push == 'false'
+        run: |
+          MAX_RETRIES=5
+          BASE_DELAY=15
+
+          for i in $(seq 1 $MAX_RETRIES); do
+            echo "Attempt $i of $MAX_RETRIES to pull chart..."
+            if helm pull ${{ inputs.chart_repo_url }}/${{ inputs.chart_name }} --version ${{ inputs.chart_version }}; then
+              echo "Successfully pulled chart"
+              break
+            else
+              if [ $i -lt $MAX_RETRIES ]; then
+                DELAY=$((BASE_DELAY * (2 ** (i - 1))))
+                echo "Pull failed (possibly rate limited), retrying in ${DELAY}s..."
+                sleep $DELAY
+              else
+                echo "Failed to pull after $MAX_RETRIES attempts"
+                exit 1
+              fi
+            fi
+          done
+
+      - name: Push chart to target registry
+        if: steps.check_exists.outputs.skip_push == 'false'
+        run: |
+          MAX_RETRIES=5
+          BASE_DELAY=15
+
+          for i in $(seq 1 $MAX_RETRIES); do
+            echo "Attempt $i of $MAX_RETRIES to push chart..."
+            if helm push ${{ inputs.chart_name }}-${{ inputs.chart_version }}.tgz oci://${{ env.registry }}/${{ inputs.target_package }}; then
+              echo "Successfully pushed chart"
+              break
+            else
+              if [ $i -lt $MAX_RETRIES ]; then
+                DELAY=$((BASE_DELAY * (2 ** (i - 1))))
+                echo "Push failed (possibly rate limited), retrying in ${DELAY}s..."
+                sleep $DELAY
+              else
+                echo "Failed to push after $MAX_RETRIES attempts"
+                exit 1
+              fi
+            fi
+          done
+
+      - name: Verify mirrored chart
+        if: steps.check_exists.outputs.skip_push == 'false'
+        run: |
+          helm pull oci://${{ env.registry }}/${{ inputs.target_package }}/${{ inputs.chart_name }} --version ${{ inputs.chart_version }}
+          echo "Verified: chart ${{ inputs.chart_name }}:${{ inputs.chart_version }} is available in target registry"
