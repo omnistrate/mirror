@@ -80,3 +80,13 @@ jobs:
     permissions:
       packages: write
       contents: read
+
+  mirror-redis:
+    uses: ./.github/workflows/mirror.yml
+    with:
+      source_image: docker.io/bitnamisecure/redis
+      tag: latest
+      target_package: ${{ github.repository_owner }}/redis
+    permissions:
+      packages: write
+      contents: read
