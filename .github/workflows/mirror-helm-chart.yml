@@ -33,7 +33,7 @@ jobs:
 
     steps:
       - name: Install Helm
-        uses: azure/setup-helm@v4
+        uses: azure/setup-helm@v5
 
       - name: Log in to target OCI registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ${{ env.registry }} -u ${{ github.actor }} --password-stdin
