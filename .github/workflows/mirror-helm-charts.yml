@@ -26,7 +26,7 @@ jobs:
     with:
       chart_name: postgres
       chart_version: "0.18.3"
-      chart_repo_url: oci://registry-1.docker.io/cloudpirates/postgres
+      chart_repo_url: oci://registry-1.docker.io/cloudpirates
       target_package: ${{ github.repository_owner }}/charts
     permissions:
       packages: write
@@ -35,9 +35,9 @@ jobs:
   mirror-cloudpirates-common-chart:
     uses: ./.github/workflows/mirror-helm-chart.yml
     with:
-      chart_name: postgres
+      chart_name: common
       chart_version: "2.2.0"
-      chart_repo_url: oci://registry-1.docker.io/cloudpirates/common
+      chart_repo_url: oci://registry-1.docker.io/cloudpirates
       target_package: ${{ github.repository_owner }}/charts
     permissions:
       packages: write
