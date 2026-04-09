@@ -140,3 +140,13 @@ jobs:
     permissions:
       packages: write
       contents: read
+
+  mirror-bitnami-postgresql:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: docker.io/bitnami/postgresql
+      tag: latest
+      target_package: ${{ github.repository_owner }}/bitnami-postgresql
+    permissions:
+      packages: write
+      contents: read
