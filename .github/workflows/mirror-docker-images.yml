@@ -81,6 +81,16 @@ jobs:
       packages: write
       contents: read
 
+  mirror-grafana-11-4-0:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: docker.io/grafana/grafana
+      tag: 11.4.0
+      target_package: ${{ github.repository_owner }}/grafana
+    permissions:
+      packages: write
+      contents: read
+
   mirror-postgres:
     uses: ./.github/workflows/mirror-docker-image.yml
     with:
