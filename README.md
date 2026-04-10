@@ -5,7 +5,7 @@
 - https://hub.docker.com/_/alpine (tags: 3.23.3)
 - https://hub.docker.com/_/nginx (tags: 1.25, 1.25-alpine, 1.26, 1.26-alpine, 1.27, 1.27-alpine)
 - https://hub.docker.com/_/postgres (tags: 17, 18.3)
-- https://hub.docker.com/_/redis → `official-redis` (tags: 7.2, 7.4, 7.6)
+- https://hub.docker.com/_/redis → `official-redis` (tags: 7.2, 7.4)
 - https://hub.docker.com/r/alpine/kubectl (tags: 1.34.2)
 - https://hub.docker.com/r/amazon/aws-cli (tags: 2.33.7)
 - https://hub.docker.com/r/bitnami/postgresql → `bitnami-postgresql` (tags: latest)

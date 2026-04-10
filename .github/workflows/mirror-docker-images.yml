@@ -273,12 +273,4 @@ jobs:
       packages: write
       contents: read
 
-  mirror-redis-7-6:
-    uses: ./.github/workflows/mirror-docker-image.yml
-    with:
-      source_image: docker.io/library/redis
-      tag: "7.6"
-      target_package: ${{ github.repository_owner }}/official-redis
-    permissions:
-      packages: write
-      contents: read
+
