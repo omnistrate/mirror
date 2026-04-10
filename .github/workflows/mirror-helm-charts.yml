@@ -21,6 +21,72 @@ jobs:
       packages: write
       contents: read
 
+  mirror-redis-chart-20-0-0:
+    uses: ./.github/workflows/mirror-helm-chart.yml
+    with:
+      chart_name: redis
+      chart_version: "20.0.0"
+      chart_repo_url: oci://registry-1.docker.io/bitnamicharts
+      target_package: ${{ github.repository_owner }}/charts
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-redis-chart-20-1-0:
+    uses: ./.github/workflows/mirror-helm-chart.yml
+    with:
+      chart_name: redis
+      chart_version: "20.1.0"
+      chart_repo_url: oci://registry-1.docker.io/bitnamicharts
+      target_package: ${{ github.repository_owner }}/charts
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-redis-chart-20-2-0:
+    uses: ./.github/workflows/mirror-helm-chart.yml
+    with:
+      chart_name: redis
+      chart_version: "20.2.0"
+      chart_repo_url: oci://registry-1.docker.io/bitnamicharts
+      target_package: ${{ github.repository_owner }}/charts
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-postgresql-chart:
+    uses: ./.github/workflows/mirror-helm-chart.yml
+    with:
+      chart_name: postgresql
+      chart_version: "16.7.27"
+      chart_repo_url: oci://registry-1.docker.io/bitnamicharts
+      target_package: ${{ github.repository_owner }}/charts
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-nginx-chart-18-0-0:
+    uses: ./.github/workflows/mirror-helm-chart.yml
+    with:
+      chart_name: nginx
+      chart_version: "18.0.0"
+      chart_repo_url: oci://registry-1.docker.io/bitnamicharts
+      target_package: ${{ github.repository_owner }}/charts
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-nginx-chart-18-1-0:
+    uses: ./.github/workflows/mirror-helm-chart.yml
+    with:
+      chart_name: nginx
+      chart_version: "18.1.0"
+      chart_repo_url: oci://registry-1.docker.io/bitnamicharts
+      target_package: ${{ github.repository_owner }}/charts
+    permissions:
+      packages: write
+      contents: read
+
   mirror-cloudpirates-postgres-chart:
     uses: ./.github/workflows/mirror-helm-chart.yml
     with:
