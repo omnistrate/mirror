@@ -150,3 +150,135 @@ jobs:
     permissions:
       packages: write
       contents: read
+
+  # --- New mirrors for e2e and integration tests ---
+
+  mirror-bitnamisecure-redis:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: docker.io/bitnamisecure/redis
+      tag: latest
+      target_package: ${{ github.repository_owner }}/bitnamisecure-redis
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-bitnamisecure-postgresql:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: docker.io/bitnamisecure/postgresql
+      tag: latest
+      target_package: ${{ github.repository_owner }}/bitnamisecure-postgresql
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-postgres-17:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: docker.io/library/postgres
+      tag: "17"
+      target_package: ${{ github.repository_owner }}/postgres
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-redis-stack-server:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: docker.io/redis/redis-stack-server
+      tag: 6.2.6-v7
+      target_package: ${{ github.repository_owner }}/redis-stack-server
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-pg-with-exporter:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: docker.io/tomnislav/pg-with-exporter
+      tag: "2.0"
+      target_package: ${{ github.repository_owner }}/pg-with-exporter
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-noop:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: docker.io/omnistrate/noop
+      tag: latest
+      target_package: ${{ github.repository_owner }}/noop
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-nginx-1-25-alpine:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: docker.io/library/nginx
+      tag: 1.25-alpine
+      target_package: ${{ github.repository_owner }}/nginx
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-nginx-1-26:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: docker.io/library/nginx
+      tag: "1.26"
+      target_package: ${{ github.repository_owner }}/nginx
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-nginx-1-26-alpine:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: docker.io/library/nginx
+      tag: 1.26-alpine
+      target_package: ${{ github.repository_owner }}/nginx
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-nginx-1-27-alpine:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: docker.io/library/nginx
+      tag: 1.27-alpine
+      target_package: ${{ github.repository_owner }}/nginx
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-redis-7-2:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: docker.io/library/redis
+      tag: "7.2"
+      target_package: ${{ github.repository_owner }}/official-redis
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-redis-7-4:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: docker.io/library/redis
+      tag: "7.4"
+      target_package: ${{ github.repository_owner }}/official-redis
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-redis-7-6:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: docker.io/library/redis
+      tag: "7.6"
+      target_package: ${{ github.repository_owner }}/official-redis
+    permissions:
+      packages: write
+      contents: read
