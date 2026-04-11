@@ -273,4 +273,24 @@ jobs:
       packages: write
       contents: read
 
+  mirror-postgres-15-alpine:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: docker.io/library/postgres
+      tag: "15-alpine"
+      target_package: ${{ github.repository_owner }}/postgres
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-temporalio-auto-setup:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: docker.io/temporalio/auto-setup
+      tag: "1.29.0"
+      target_package: ${{ github.repository_owner }}/temporalio-auto-setup
+    permissions:
+      packages: write
+      contents: read
+
 

@@ -4,7 +4,7 @@
 - https://hub.docker.com/_/busybox (tags: 1.37.0, 1.31.1)
 - https://hub.docker.com/_/alpine (tags: 3.23.3)
 - https://hub.docker.com/_/nginx (tags: 1.25, 1.25-alpine, 1.26, 1.26-alpine, 1.27, 1.27-alpine)
-- https://hub.docker.com/_/postgres (tags: 17, 18.3)
+- https://hub.docker.com/_/postgres (tags: 15-alpine, 17, 18.3)
 - https://hub.docker.com/_/redis → `official-redis` (tags: 7.2, 7.4)
 - https://hub.docker.com/r/alpine/kubectl (tags: 1.35.3)
 - https://hub.docker.com/r/amazon/aws-cli (tags: 2.34.5)
@@ -18,6 +18,7 @@
 - https://hub.docker.com/r/omnistrate/noop → `noop` (tags: latest)
 - https://hub.docker.com/r/redis/redis-stack-server → `redis-stack-server` (tags: 6.2.6-v7)
 - https://hub.docker.com/r/tomnislav/pg-with-exporter → `pg-with-exporter` (tags: 2.0)
+- https://hub.docker.com/r/temporalio/auto-setup → `temporalio-auto-setup` (tags: 1.29.0)
 
 ## Helm Charts
 All at `oci://ghcr.io/omnistrate/charts/`:
