@@ -19,6 +19,8 @@
 - https://hub.docker.com/r/redis/redis-stack-server → `redis-stack-server` (tags: 6.2.6-v7)
 - https://hub.docker.com/r/tomnislav/pg-with-exporter → `pg-with-exporter` (tags: 2.0)
 - https://hub.docker.com/r/temporalio/auto-setup → `temporalio-auto-setup` (tags: 1.29.0)
+- https://hub.docker.com/r/temporalio/ui → `temporalio-ui` (tags: 2.39.0)
+- https://hub.docker.com/r/testcontainers/ryuk → `testcontainers-ryuk` (tags: 0.13.0)
 
 ## Helm Charts
 All at `oci://ghcr.io/omnistrate/charts/`:

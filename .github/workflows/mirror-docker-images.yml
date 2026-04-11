@@ -293,4 +293,24 @@ jobs:
       packages: write
       contents: read
 
+  mirror-temporalio-ui:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: docker.io/temporalio/ui
+      tag: "2.39.0"
+      target_package: ${{ github.repository_owner }}/temporalio-ui
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-testcontainers-ryuk:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: docker.io/testcontainers/ryuk
+      tag: "0.13.0"
+      target_package: ${{ github.repository_owner }}/testcontainers-ryuk
+    permissions:
+      packages: write
+      contents: read
+
 
