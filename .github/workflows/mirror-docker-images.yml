@@ -105,7 +105,7 @@ jobs:
     uses: ./.github/workflows/mirror-docker-image.yml
     with:
       source_image: docker.io/nginxdemos/hello
-      tag: 0.4
+      tag: latest
       target_package: ${{ github.repository_owner }}/nginxdemos-hello
     permissions:
       packages: write
@@ -187,7 +187,7 @@ jobs:
     uses: ./.github/workflows/mirror-docker-image.yml
     with:
       source_image: docker.io/redis/redis-stack-server
-      tag: 6.2.6-v7
+      tag: latest
       target_package: ${{ github.repository_owner }}/redis-stack-server
     permissions:
       packages: write
@@ -297,7 +297,7 @@ jobs:
     uses: ./.github/workflows/mirror-docker-image.yml
     with:
       source_image: docker.io/temporalio/ui
-      tag: "2.39.0"
+      tag: "2.48.2"
       target_package: ${{ github.repository_owner }}/temporalio-ui
     permissions:
       packages: write
