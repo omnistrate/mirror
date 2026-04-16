@@ -98,6 +98,17 @@ jobs:
       packages: write
       contents: read
 
+  mirror-cloudpirates-postgres-chart-0-19-0:
+    uses: ./.github/workflows/mirror-helm-chart.yml
+    with:
+      chart_name: postgres
+      chart_version: "0.19.0"
+      chart_repo_url: oci://registry-1.docker.io/cloudpirates
+      target_package: ${{ github.repository_owner }}/charts
+    permissions:
+      packages: write
+      contents: read
+
   mirror-cloudpirates-common-chart:
     uses: ./.github/workflows/mirror-helm-chart.yml
     with:
