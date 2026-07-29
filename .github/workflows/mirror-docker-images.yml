@@ -65,7 +65,7 @@ jobs:
     uses: ./.github/workflows/mirror-docker-image.yml
     with:
       source_image: docker.io/amazon/aws-cli
-      tag: 2.34.5
+      tag: 2.36.10
       target_package: ${{ github.repository_owner }}/aws-cli
     permissions:
       packages: write
