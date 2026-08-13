@@ -21,6 +21,17 @@
 - https://hub.docker.com/r/temporalio/auto-setup → `temporalio-auto-setup` (tags: 1.29.0)
 - https://hub.docker.com/r/temporalio/ui → `temporalio-ui` (tags: 2.39.0)
 - https://hub.docker.com/r/testcontainers/ryuk → `testcontainers-ryuk` (tags: 0.13.0)
+- https://gallery.ecr.aws/eks/aws-load-balancer-controller → `aws-load-balancer-controller` (tags: v2.17.1)
+- https://gallery.ecr.aws/ebs-csi-driver/aws-ebs-csi-driver → `aws-ebs-csi-driver` (tags: v1.55.0)
+- https://gallery.ecr.aws/csi-components/csi-attacher → `csi-attacher` (tags: v4.10.0-eksbuild.3)
+- https://gallery.ecr.aws/csi-components/csi-provisioner → `csi-provisioner` (tags: v6.1.0-eksbuild.2)
+- https://gallery.ecr.aws/csi-components/csi-resizer → `csi-resizer` (tags: v2.0.0-eksbuild.3)
+- https://gallery.ecr.aws/csi-components/csi-node-driver-registrar → `csi-node-driver-registrar` (tags: v2.15.0-eksbuild.3)
+- https://gallery.ecr.aws/csi-components/livenessprobe → `csi-livenessprobe` (tags: v2.17.0-eksbuild.3)
+- https://gallery.ecr.aws/efs-csi-driver/amazon/aws-efs-csi-driver → `aws-efs-csi-driver` (tags: v2.3.0)
+- https://gallery.ecr.aws/eks-distro/kubernetes-csi/livenessprobe → `eks-distro-csi-livenessprobe` (tags: v2.12.0-eks-1-29-7)
+- https://gallery.ecr.aws/eks-distro/kubernetes-csi/node-driver-registrar → `eks-distro-csi-node-driver-registrar` (tags: v2.10.0-eks-1-29-7)
+- https://gallery.ecr.aws/mountpoint-s3-csi-driver/aws-mountpoint-s3-csi-driver → `aws-mountpoint-s3-csi-driver` (tags: v2.3.0)
 
 ## Helm Charts
 All at `oci://ghcr.io/omnistrate/charts/`:
@@ -30,4 +41,4 @@ All at `oci://ghcr.io/omnistrate/charts/`:
 - `postgres` 0.18.3 from `oci://registry-1.docker.io/cloudpirates`
 - `common` 2.2.0 from `oci://registry-1.docker.io/cloudpirates`
 
-Created to avoid throttling from DockerHub
+Created to avoid throttling from public upstream registries.
