@@ -327,7 +327,7 @@ jobs:
     uses: ./.github/workflows/mirror-docker-image.yml
     with:
       source_image: docker.io/eeacms/rsync
-      tag: latest
+      tag: "3.0"
       target_package: ${{ github.repository_owner }}/rsync
     permissions:
       packages: write
