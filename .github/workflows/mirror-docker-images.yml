@@ -153,6 +153,116 @@ jobs:
 
   # --- New mirrors for e2e and integration tests ---
 
+  mirror-aws-load-balancer-controller:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: public.ecr.aws/eks/aws-load-balancer-controller
+      tag: v2.17.1
+      target_package: ${{ github.repository_owner }}/aws-load-balancer-controller
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-aws-ebs-csi-driver:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: public.ecr.aws/ebs-csi-driver/aws-ebs-csi-driver
+      tag: v1.55.0
+      target_package: ${{ github.repository_owner }}/aws-ebs-csi-driver
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-csi-attacher:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: public.ecr.aws/csi-components/csi-attacher
+      tag: v4.10.0-eksbuild.3
+      target_package: ${{ github.repository_owner }}/csi-attacher
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-csi-provisioner:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: public.ecr.aws/csi-components/csi-provisioner
+      tag: v6.1.0-eksbuild.2
+      target_package: ${{ github.repository_owner }}/csi-provisioner
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-csi-resizer:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: public.ecr.aws/csi-components/csi-resizer
+      tag: v2.0.0-eksbuild.3
+      target_package: ${{ github.repository_owner }}/csi-resizer
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-csi-node-driver-registrar:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: public.ecr.aws/csi-components/csi-node-driver-registrar
+      tag: v2.15.0-eksbuild.3
+      target_package: ${{ github.repository_owner }}/csi-node-driver-registrar
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-csi-livenessprobe:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: public.ecr.aws/csi-components/livenessprobe
+      tag: v2.17.0-eksbuild.3
+      target_package: ${{ github.repository_owner }}/csi-livenessprobe
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-aws-efs-csi-driver:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: public.ecr.aws/efs-csi-driver/amazon/aws-efs-csi-driver
+      tag: v2.3.0
+      target_package: ${{ github.repository_owner }}/aws-efs-csi-driver
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-eks-distro-csi-livenessprobe:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: public.ecr.aws/eks-distro/kubernetes-csi/livenessprobe
+      tag: v2.12.0-eks-1-29-7
+      target_package: ${{ github.repository_owner }}/eks-distro-csi-livenessprobe
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-eks-distro-csi-node-driver-registrar:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: public.ecr.aws/eks-distro/kubernetes-csi/node-driver-registrar
+      tag: v2.10.0-eks-1-29-7
+      target_package: ${{ github.repository_owner }}/eks-distro-csi-node-driver-registrar
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-aws-mountpoint-s3-csi-driver:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: public.ecr.aws/mountpoint-s3-csi-driver/aws-mountpoint-s3-csi-driver
+      tag: v2.3.0
+      target_package: ${{ github.repository_owner }}/aws-mountpoint-s3-csi-driver
+    permissions:
+      packages: write
+      contents: read
+
   mirror-bitnamisecure-redis:
     uses: ./.github/workflows/mirror-docker-image.yml
     with:
