@@ -12,6 +12,7 @@
 - https://hub.docker.com/r/bitnamisecure/postgresql → `bitnamisecure-postgresql` (tags: latest)
 - https://hub.docker.com/r/bitnamisecure/redis → `bitnamisecure-redis` (tags: latest)
 - https://hub.docker.com/r/bitnamisecure/redis → `redis` (tags: latest) *(legacy)*
+- https://hub.docker.com/r/eeacms/rsync → `rsync` (tags: 3.0)
 - https://hub.docker.com/r/grafana/grafana (tags: 11.4.0, 12.3.1)
 - https://hub.docker.com/r/grafana/grafana-image-renderer (tags: latest)
 - https://hub.docker.com/r/nginxdemos/hello → `nginxdemos-hello` (tags: 0.4)
