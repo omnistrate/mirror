@@ -14,12 +14,7 @@ on:
       tag:
         required: true
         type: string
-        description: "Version tag to push to the target package"
-      source_tag:
-        required: false
-        type: string
-        default: ""
-        description: "Version tag of the source image to mirror; defaults to tag"
+        description: "Version tag of the source image to mirror"
 
 env: 
     registry: ghcr.io
@@ -55,10 +50,6 @@ jobs:
         if: steps.check_exists.outputs.skip_push == 'false'
         run: |
           VERSION=${{ inputs.tag }}
-          SOURCE_VERSION="${{ inputs.source_tag }}"
-          if [ -z "$SOURCE_VERSION" ]; then
-            SOURCE_VERSION="$VERSION"
-          fi
           # Copy manifest list and all referenced manifests with exponential backoff
           MAX_RETRIES=5
           BASE_DELAY=15
@@ -68,7 +59,7 @@ jobs:
             if docker buildx imagetools create \
               --progress=plain \
               --tag ${{ env.registry }}/${{ inputs.target_package }}:$VERSION \
-              ${{ inputs.source_image }}:$SOURCE_VERSION; then
+              ${{ inputs.source_image }}:$VERSION; then
               echo "Successfully pushed image"
               break
             else
