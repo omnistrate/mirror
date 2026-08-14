@@ -326,7 +326,8 @@ jobs:
   mirror-rsync:
     uses: ./.github/workflows/mirror-docker-image.yml
     with:
-      source_image: docker.io/dothebetter/rsync
+      source_image: docker.io/eeacms/rsync
+      source_tag: "3.0"
       tag: "3.4.1"
       target_package: ${{ github.repository_owner }}/rsync
     permissions:
@@ -432,4 +433,3 @@ jobs:
     permissions:
       packages: write
       contents: read
-
