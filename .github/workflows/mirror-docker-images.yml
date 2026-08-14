@@ -323,16 +323,6 @@ jobs:
       packages: write
       contents: read
 
-  mirror-rsync:
-    uses: ./.github/workflows/mirror-docker-image.yml
-    with:
-      source_image: docker.io/eeacms/rsync
-      tag: "3.0"
-      target_package: ${{ github.repository_owner }}/rsync
-    permissions:
-      packages: write
-      contents: read
-
   mirror-nginx-1-25-alpine:
     uses: ./.github/workflows/mirror-docker-image.yml
     with:
