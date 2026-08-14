@@ -213,6 +213,16 @@ jobs:
       packages: write
       contents: read
 
+  mirror-rsync:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: docker.io/dothebetter/rsync
+      tag: "3.4.1"
+      target_package: ${{ github.repository_owner }}/rsync
+    permissions:
+      packages: write
+      contents: read
+
   mirror-nginx-1-25-alpine:
     uses: ./.github/workflows/mirror-docker-image.yml
     with:
@@ -312,5 +322,4 @@ jobs:
     permissions:
       packages: write
       contents: read
-
 
