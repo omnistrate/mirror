@@ -263,6 +263,239 @@ jobs:
       packages: write
       contents: read
 
+  # Dataplane host-cluster amenities. Release assembly consumes these stable
+  # GHCR mirrors instead of pulling third-party registries directly.
+
+  mirror-cluster-autoscaler:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: registry.k8s.io/autoscaling/cluster-autoscaler
+      tag: v1.34.2
+      target_package: ${{ github.repository_owner }}/cluster-autoscaler
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-external-dns:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: registry.k8s.io/external-dns/external-dns
+      tag: v0.20.0
+      target_package: ${{ github.repository_owner }}/external-dns
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-cert-manager-controller:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: quay.io/jetstack/cert-manager-controller
+      tag: v1.20.1
+      target_package: ${{ github.repository_owner }}/cert-manager-controller
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-cert-manager-webhook:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: quay.io/jetstack/cert-manager-webhook
+      tag: v1.20.1
+      target_package: ${{ github.repository_owner }}/cert-manager-webhook
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-cert-manager-cainjector:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: quay.io/jetstack/cert-manager-cainjector
+      tag: v1.20.1
+      target_package: ${{ github.repository_owner }}/cert-manager-cainjector
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-cert-manager-startupapicheck:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: quay.io/jetstack/cert-manager-startupapicheck
+      tag: v1.20.1
+      target_package: ${{ github.repository_owner }}/cert-manager-startupapicheck
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-nginx-ingress-controller:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: docker.io/nginx/nginx-ingress
+      tag: "3.6.2"
+      target_package: ${{ github.repository_owner }}/nginx-ingress
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-prometheus-operator:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: quay.io/prometheus-operator/prometheus-operator
+      tag: v0.90.1
+      target_package: ${{ github.repository_owner }}/prometheus-operator
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-prometheus-config-reloader:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: quay.io/prometheus-operator/prometheus-config-reloader
+      tag: v0.90.1
+      target_package: ${{ github.repository_owner }}/prometheus-config-reloader
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-prometheus:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: quay.io/prometheus/prometheus
+      tag: v3.11.1
+      target_package: ${{ github.repository_owner }}/prometheus
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-cost-prometheus:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: quay.io/prometheus/prometheus
+      tag: v2.55.1
+      target_package: ${{ github.repository_owner }}/prometheus
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-kube-webhook-certgen:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: ghcr.io/jkroepke/kube-webhook-certgen
+      tag: "1.8.0"
+      target_package: ${{ github.repository_owner }}/kube-webhook-certgen
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-bats:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: docker.io/bats/bats
+      tag: v1.4.1
+      target_package: ${{ github.repository_owner }}/bats
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-headlamp:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: ghcr.io/headlamp-k8s/headlamp
+      tag: v0.41.0
+      target_package: ${{ github.repository_owner }}/headlamp
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-dashboard-auth:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: ghcr.io/omnistrate-oss/dashboard-auth
+      tag: "1.4.0"
+      target_package: ${{ github.repository_owner }}/dashboard-auth
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-dashboard-api:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: ghcr.io/omnistrate-oss/dashboard-api
+      tag: "1.14.0"
+      target_package: ${{ github.repository_owner }}/dashboard-api
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-dashboard-web:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: ghcr.io/omnistrate-oss/dashboard-web
+      tag: "1.7.0"
+      target_package: ${{ github.repository_owner }}/dashboard-web
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-dashboard-metrics-scraper:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: ghcr.io/omnistrate-oss/dashboard-metrics-scraper
+      tag: "1.2.2"
+      target_package: ${{ github.repository_owner }}/dashboard-metrics-scraper
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-kong:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: docker.io/library/kong
+      tag: "3.9"
+      target_package: ${{ github.repository_owner }}/kong
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-keda:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: ghcr.io/kedacore/keda
+      tag: "2.19.0"
+      target_package: ${{ github.repository_owner }}/keda
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-keda-metrics-apiserver:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: ghcr.io/kedacore/keda-metrics-apiserver
+      tag: "2.19.0"
+      target_package: ${{ github.repository_owner }}/keda-metrics-apiserver
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-keda-admission-webhooks:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: ghcr.io/kedacore/keda-admission-webhooks
+      tag: "2.19.0"
+      target_package: ${{ github.repository_owner }}/keda-admission-webhooks
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-dcgm-exporter:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: nvcr.io/nvidia/k8s/dcgm-exporter
+      tag: 4.5.2-4.8.1-distroless
+      target_package: ${{ github.repository_owner }}/dcgm-exporter
+    permissions:
+      packages: write
+      contents: read
+
   mirror-bitnamisecure-redis:
     uses: ./.github/workflows/mirror-docker-image.yml
     with:

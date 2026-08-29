@@ -14,7 +14,7 @@ on:
       chart_repo_url:
         required: true
         type: string
-        description: "Source OCI registry URL (e.g. oci://registry-1.docker.io/bitnamicharts)"
+        description: "Source Helm repository URL (OCI or index-based HTTP/S)"
       target_package:
         required: true
         type: string
@@ -55,10 +55,18 @@ jobs:
         run: |
           MAX_RETRIES=5
           BASE_DELAY=15
+          CHART_REPO_URL="${{ inputs.chart_repo_url }}"
+
+          if [[ "$CHART_REPO_URL" == oci://* ]]; then
+            SOURCE_REF="${CHART_REPO_URL%/}/${{ inputs.chart_name }}"
+          else
+            helm repo add upstream "$CHART_REPO_URL" --force-update
+            SOURCE_REF="upstream/${{ inputs.chart_name }}"
+          fi
 
           for i in $(seq 1 $MAX_RETRIES); do
             echo "Attempt $i of $MAX_RETRIES to pull chart..."
-            if helm pull ${{ inputs.chart_repo_url }}/${{ inputs.chart_name }} --version ${{ inputs.chart_version }}; then
+            if helm pull "$SOURCE_REF" --version "${{ inputs.chart_version }}"; then
               echo "Successfully pulled chart"
               break
             else
