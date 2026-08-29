@@ -120,7 +120,7 @@ jobs:
       packages: write
       contents: read
 
-  # Managed host-cluster amenities. These jobs make GHCR the stable upstream
+  # Dataplane host-cluster amenities. These jobs make GHCR the stable upstream
   # consumed by the release artifact sync instead of reaching public chart
   # repositories from every provisioner account.
 

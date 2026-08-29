@@ -263,7 +263,7 @@ jobs:
       packages: write
       contents: read
 
-  # Managed host-cluster amenities. Release assembly consumes these stable
+  # Dataplane host-cluster amenities. Release assembly consumes these stable
   # GHCR mirrors instead of pulling third-party registries directly.
 
   mirror-cluster-autoscaler:
