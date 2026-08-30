@@ -15,7 +15,12 @@ on:
         required: false
         type: string
         default: ""
-        description: "Immutable target version when mirrored content must differ from upstream"
+        description: "Explicit target version when mirrored content differs from upstream"
+      force_push:
+        required: false
+        type: boolean
+        default: false
+        description: "Replace an existing mutable target tag"
       chart_repo_url:
         required: true
         type: string
@@ -63,8 +68,15 @@ jobs:
 
       - name: Check if chart version already exists
         id: check_exists
+        env:
+          FORCE_PUSH: ${{ inputs.force_push }}
         run: |
           TARGET_VERSION="${{ steps.chart.outputs.target_version }}"
+          if [[ "$FORCE_PUSH" == "true" ]]; then
+            echo "Force-pushing chart ${{ inputs.chart_name }}:$TARGET_VERSION."
+            echo "skip_push=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           EXISTING_DIRECTORY="$RUNNER_TEMP/existing-chart"
           mkdir -p "$EXISTING_DIRECTORY"
           if helm pull oci://${{ env.registry }}/${{ inputs.target_package }}/${{ inputs.chart_name }} --version "$TARGET_VERSION" --destination "$EXISTING_DIRECTORY" 2>/dev/null; then
@@ -114,6 +126,7 @@ jobs:
         env:
           CHART_NAME: ${{ inputs.chart_name }}
           SOURCE_VERSION: ${{ inputs.chart_version }}
+          REQUESTED_TARGET_VERSION: ${{ inputs.target_chart_version }}
           TARGET_VERSION: ${{ steps.chart.outputs.target_version }}
         run: |
           SOURCE_ARCHIVE="$(find "$RUNNER_TEMP/source-chart" -maxdepth 1 -type f -name "$CHART_NAME-*.tgz" -print -quit)"
@@ -135,8 +148,8 @@ jobs:
           echo "$SANITIZE_SUMMARY"
           FILES_CHANGED="$(jq -r '.filesChanged' <<< "$SANITIZE_SUMMARY")"
 
-          if [[ "$FILES_CHANGED" -gt 0 && "$TARGET_VERSION" == "$SOURCE_VERSION" ]]; then
-            echo "Schema vendoring changed the chart; set target_chart_version to publish an immutable forked version"
+          if [[ "$FILES_CHANGED" -gt 0 && -z "$REQUESTED_TARGET_VERSION" ]]; then
+            echo "Schema vendoring changed the chart; set target_chart_version explicitly"
             exit 1
           fi
 

@@ -2,6 +2,12 @@ name: Mirror Helm Charts
 
 on:
     workflow_dispatch:
+        inputs:
+            force_nginx_ingress:
+                description: Replace the existing nginx-ingress chart tag
+                required: false
+                default: false
+                type: boolean
     push:
         branches:
             - main
@@ -206,7 +212,8 @@ jobs:
     with:
       chart_name: nginx-ingress
       chart_version: "1.3.2"
-      target_chart_version: "1.3.2-omnistrate.1"
+      target_chart_version: "1.3.2"
+      force_push: ${{ inputs.force_nginx_ingress || false }}
       chart_repo_url: https://helm.nginx.com/stable
       target_package: ${{ github.repository_owner }}/charts
     permissions:
