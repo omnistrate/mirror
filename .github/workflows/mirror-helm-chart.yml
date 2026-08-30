@@ -11,6 +11,16 @@ on:
         required: true
         type: string
         description: "Helm chart version to mirror (e.g. 22.0.7)"
+      target_chart_version:
+        required: false
+        type: string
+        default: ""
+        description: "Explicit target version when mirrored content differs from upstream"
+      force_push:
+        required: false
+        type: boolean
+        default: false
+        description: "Replace an existing mutable target tag"
       chart_repo_url:
         required: true
         type: string
@@ -32,19 +42,46 @@ jobs:
       contents: read
 
     steps:
+      - name: Check out mirror tooling
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
       - name: Install Helm
         uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
+
+      - name: Test Helm schema vendoring
+        run: node --test scripts/vendor-helm-schema-refs.test.mjs
+
+      - name: Resolve target chart version
+        id: chart
+        env:
+          SOURCE_VERSION: ${{ inputs.chart_version }}
+          REQUESTED_TARGET_VERSION: ${{ inputs.target_chart_version }}
+        run: |
+          TARGET_VERSION="$REQUESTED_TARGET_VERSION"
+          if [[ -z "$TARGET_VERSION" ]]; then
+            TARGET_VERSION="$SOURCE_VERSION"
+          fi
+          echo "target_version=$TARGET_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Log in to target OCI registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ${{ env.registry }} -u ${{ github.actor }} --password-stdin
 
       - name: Check if chart version already exists
         id: check_exists
+        env:
+          FORCE_PUSH: ${{ inputs.force_push }}
         run: |
-          if helm pull oci://${{ env.registry }}/${{ inputs.target_package }}/${{ inputs.chart_name }} --version ${{ inputs.chart_version }} 2>/dev/null; then
-            echo "Chart ${{ inputs.chart_name }}:${{ inputs.chart_version }} already exists in target. Skipping push."
+          TARGET_VERSION="${{ steps.chart.outputs.target_version }}"
+          if [[ "$FORCE_PUSH" == "true" ]]; then
+            echo "Force-pushing chart ${{ inputs.chart_name }}:$TARGET_VERSION."
+            echo "skip_push=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          EXISTING_DIRECTORY="$RUNNER_TEMP/existing-chart"
+          mkdir -p "$EXISTING_DIRECTORY"
+          if helm pull oci://${{ env.registry }}/${{ inputs.target_package }}/${{ inputs.chart_name }} --version "$TARGET_VERSION" --destination "$EXISTING_DIRECTORY" 2>/dev/null; then
+            echo "Chart ${{ inputs.chart_name }}:$TARGET_VERSION already exists in target. Skipping push."
             echo "skip_push=true" >> $GITHUB_OUTPUT
-            rm -f ${{ inputs.chart_name }}-${{ inputs.chart_version }}.tgz
           else
             echo "Chart version not found in target. Proceeding with mirror."
             echo "skip_push=false" >> $GITHUB_OUTPUT
@@ -56,6 +93,8 @@ jobs:
           MAX_RETRIES=5
           BASE_DELAY=15
           CHART_REPO_URL="${{ inputs.chart_repo_url }}"
+          SOURCE_DIRECTORY="$RUNNER_TEMP/source-chart"
+          mkdir -p "$SOURCE_DIRECTORY"
 
           if [[ "$CHART_REPO_URL" == oci://* ]]; then
             SOURCE_REF="${CHART_REPO_URL%/}/${{ inputs.chart_name }}"
@@ -66,7 +105,7 @@ jobs:
 
           for i in $(seq 1 $MAX_RETRIES); do
             echo "Attempt $i of $MAX_RETRIES to pull chart..."
-            if helm pull "$SOURCE_REF" --version "${{ inputs.chart_version }}"; then
+            if helm pull "$SOURCE_REF" --version "${{ inputs.chart_version }}" --destination "$SOURCE_DIRECTORY"; then
               echo "Successfully pulled chart"
               break
             else
@@ -81,15 +120,81 @@ jobs:
             fi
           done
 
-      - name: Push chart to target registry
+      - name: Vendor remote schema definitions and validate offline
         if: steps.check_exists.outputs.skip_push == 'false'
+        id: prepare
+        env:
+          CHART_NAME: ${{ inputs.chart_name }}
+          SOURCE_VERSION: ${{ inputs.chart_version }}
+          REQUESTED_TARGET_VERSION: ${{ inputs.target_chart_version }}
+          TARGET_VERSION: ${{ steps.chart.outputs.target_version }}
+        run: |
+          SOURCE_ARCHIVE="$(find "$RUNNER_TEMP/source-chart" -maxdepth 1 -type f -name "$CHART_NAME-*.tgz" -print -quit)"
+          if [[ -z "$SOURCE_ARCHIVE" ]]; then
+            echo "Source chart archive was not found"
+            exit 1
+          fi
+
+          STAGING_DIRECTORY="$RUNNER_TEMP/chart-staging"
+          mkdir -p "$STAGING_DIRECTORY"
+          tar -xzf "$SOURCE_ARCHIVE" -C "$STAGING_DIRECTORY"
+          CHART_DIRECTORY="$(find "$STAGING_DIRECTORY" -mindepth 1 -maxdepth 1 -type d -print -quit)"
+          if [[ -z "$CHART_DIRECTORY" ]]; then
+            echo "Unpacked chart directory was not found"
+            exit 1
+          fi
+
+          SANITIZE_SUMMARY="$(node scripts/vendor-helm-schema-refs.mjs "$CHART_DIRECTORY")"
+          echo "$SANITIZE_SUMMARY"
+          FILES_CHANGED="$(jq -r '.filesChanged' <<< "$SANITIZE_SUMMARY")"
+
+          if [[ "$FILES_CHANGED" -gt 0 && -z "$REQUESTED_TARGET_VERSION" ]]; then
+            echo "Schema vendoring changed the chart; set target_chart_version explicitly"
+            exit 1
+          fi
+
+          FINAL_ARCHIVE="$SOURCE_ARCHIVE"
+          if [[ "$FILES_CHANGED" -gt 0 || "$TARGET_VERSION" != "$SOURCE_VERSION" ]]; then
+            PACKAGE_DIRECTORY="$RUNNER_TEMP/chart-package"
+            mkdir -p "$PACKAGE_DIRECTORY"
+            helm package "$CHART_DIRECTORY" --version "$TARGET_VERSION" --destination "$PACKAGE_DIRECTORY"
+            FINAL_ARCHIVE="$(find "$PACKAGE_DIRECTORY" -maxdepth 1 -type f -name "$CHART_NAME-*.tgz" -print -quit)"
+          fi
+
+          VERIFY_DIRECTORY="$RUNNER_TEMP/chart-verify"
+          mkdir -p "$VERIFY_DIRECTORY"
+          tar -xzf "$FINAL_ARCHIVE" -C "$VERIFY_DIRECTORY"
+          VERIFY_CHART_DIRECTORY="$(find "$VERIFY_DIRECTORY" -mindepth 1 -maxdepth 1 -type d -print -quit)"
+
+          set +e
+          CHECK_SUMMARY="$(node scripts/vendor-helm-schema-refs.mjs --check "$VERIFY_CHART_DIRECTORY")"
+          CHECK_STATUS=$?
+          set -e
+          echo "$CHECK_SUMMARY"
+          if [[ "$CHECK_STATUS" -ne 0 ]]; then
+            echo "Packaged chart still contains non-local JSON Schema references"
+            exit 1
+          fi
+
+          HTTPS_PROXY=http://127.0.0.1:1 \
+          HTTP_PROXY=http://127.0.0.1:1 \
+          ALL_PROXY=http://127.0.0.1:1 \
+          https_proxy=http://127.0.0.1:1 \
+          http_proxy=http://127.0.0.1:1 \
+          all_proxy=http://127.0.0.1:1 \
+            helm lint "$FINAL_ARCHIVE"
+
+          echo "archive=$FINAL_ARCHIVE" >> "$GITHUB_OUTPUT"
+
+      - name: Push chart to target registry
+        if: steps.check_exists.outputs.skip_push == 'false' && github.event_name != 'pull_request'
         run: |
           MAX_RETRIES=5
           BASE_DELAY=15
 
           for i in $(seq 1 $MAX_RETRIES); do
             echo "Attempt $i of $MAX_RETRIES to push chart..."
-            if helm push ${{ inputs.chart_name }}-${{ inputs.chart_version }}.tgz oci://${{ env.registry }}/${{ inputs.target_package }}; then
+            if helm push "${{ steps.prepare.outputs.archive }}" oci://${{ env.registry }}/${{ inputs.target_package }}; then
               echo "Successfully pushed chart"
               break
             else
@@ -105,7 +210,9 @@ jobs:
           done
 
       - name: Verify mirrored chart
-        if: steps.check_exists.outputs.skip_push == 'false'
+        if: steps.check_exists.outputs.skip_push == 'false' && github.event_name != 'pull_request'
         run: |
-          helm pull oci://${{ env.registry }}/${{ inputs.target_package }}/${{ inputs.chart_name }} --version ${{ inputs.chart_version }}
-          echo "Verified: chart ${{ inputs.chart_name }}:${{ inputs.chart_version }} is available in target registry"
+          TARGET_VERSION="${{ steps.chart.outputs.target_version }}"
+          mkdir -p "$RUNNER_TEMP/verified-chart"
+          helm pull oci://${{ env.registry }}/${{ inputs.target_package }}/${{ inputs.chart_name }} --version "$TARGET_VERSION" --destination "$RUNNER_TEMP/verified-chart"
+          echo "Verified: chart ${{ inputs.chart_name }}:$TARGET_VERSION is available in target registry"
