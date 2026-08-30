@@ -69,7 +69,7 @@ All at `oci://ghcr.io/omnistrate/charts/`:
 - `cluster-autoscaler` 9.53.0 from `https://kubernetes.github.io/autoscaler`
 - `external-dns` 1.20.0 from `https://kubernetes-sigs.github.io/external-dns`
 - `cert-manager` v1.20.1 from `https://charts.jetstack.io`
-- `nginx-ingress` 1.3.2 from `https://helm.nginx.com/stable`
+- `nginx-ingress` 1.3.2 and 1.3.2-omnistrate.1 from upstream 1.3.2 at `https://helm.nginx.com/stable` (`-omnistrate.1` vendors remote JSON Schema definitions for offline Helm validation)
 - `kube-prometheus-stack` 83.4.0 from `https://prometheus-community.github.io/helm-charts`
 - `grafana` 10.5.15 from `https://grafana.github.io/helm-charts`
 - `headlamp` 0.41.0 from `https://kubernetes-sigs.github.io/headlamp`
@@ -78,3 +78,8 @@ All at `oci://ghcr.io/omnistrate/charts/`:
 - `dcgm-exporter` 4.8.1 from `https://nvidia.github.io/dcgm-exporter/helm-charts`
 
 Created to avoid throttling from public upstream registries.
+
+Charts that require mirror-side content changes are published under a distinct
+immutable version. The generic mirror workflow vendors supported HTTPS JSON
+Schema definition references, rejects unsupported non-local references, and
+runs `helm lint` with outbound HTTP(S) blocked before publishing.
