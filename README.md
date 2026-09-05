@@ -7,6 +7,7 @@
 - https://hub.docker.com/_/postgres (tags: 15-alpine, 17, 18.3)
 - https://hub.docker.com/_/redis → `official-redis` (tags: 7.2, 7.4)
 - https://hub.docker.com/r/alpine/kubectl (tags: 1.35.3)
+- https://hub.docker.com/r/rancher/local-path-provisioner → `local-path-provisioner` (tags: v0.0.31)
 - https://hub.docker.com/r/amazon/aws-cli (tags: 2.34.5)
 - https://hub.docker.com/r/bitnami/postgresql → `bitnami-postgresql` (tags: latest)
 - https://hub.docker.com/r/bitnamisecure/postgresql → `bitnamisecure-postgresql` (tags: latest)
