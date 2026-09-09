@@ -61,6 +61,16 @@ jobs:
       packages: write
       contents: read
 
+  mirror-local-path-provisioner:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: docker.io/rancher/local-path-provisioner
+      tag: v0.0.31
+      target_package: ${{ github.repository_owner }}/local-path-provisioner
+    permissions:
+      packages: write
+      contents: read
+
   mirror-aws-cli:
     uses: ./.github/workflows/mirror-docker-image.yml
     with:
