@@ -83,8 +83,8 @@ jobs:
 
           for i in $(seq 1 $MAX_RETRIES); do
             echo "Attempt $i of $MAX_RETRIES to copy chart and reference artifacts..."
-            if regctl image copy --referrers --digest-tags --force-recursive "$SOURCE_REF" "$TARGET_REF"; then
-              echo "Successfully copied chart, OCI referrers, and digest tags"
+            if regctl image copy --referrers --force-recursive "$SOURCE_REF" "$TARGET_REF"; then
+              echo "Successfully copied chart and OCI referrers"
               break
             else
               if [ $i -lt $MAX_RETRIES ]; then

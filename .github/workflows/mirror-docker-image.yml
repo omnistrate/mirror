@@ -51,8 +51,8 @@ jobs:
           # may have been published after the image itself was mirrored.
           for i in $(seq 1 $MAX_RETRIES); do
             echo "Attempt $i of $MAX_RETRIES..."
-            if regctl image copy --referrers --digest-tags --force-recursive "$SOURCE_REF" "$TARGET_REF"; then
-              echo "Successfully copied image, OCI referrers, and digest tags"
+            if regctl image copy --referrers --force-recursive "$SOURCE_REF" "$TARGET_REF"; then
+              echo "Successfully copied image and OCI referrers"
               break
             else
               if [ $i -lt $MAX_RETRIES ]; then
