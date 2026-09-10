@@ -54,6 +54,10 @@ jobs:
             SOURCE_REF="${SOURCE_IMAGE}@${TARGET_DIGEST}"
             EXPECTED_DIGEST="$TARGET_DIGEST"
             echo "Target already exists at ${TARGET_DIGEST}; backfilling referrers from the immutable source digest."
+            if ! regctl image digest "$SOURCE_REF" >/dev/null 2>&1; then
+              echo "::warning::Source no longer exposes ${SOURCE_REF}; keeping ${TARGET_REF} unchanged and skipping referrer backfill."
+              exit 0
+            fi
           else
             SOURCE_REF="$SOURCE_TAG_REF"
             EXPECTED_DIGEST=$(regctl image digest "$SOURCE_REF")
