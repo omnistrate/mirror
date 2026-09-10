@@ -84,5 +84,6 @@ Created to avoid throttling from public upstream registries.
 
 Docker images and charts sourced from OCI registries are mirrored recursively,
 including OCI 1.1 referrers such as signatures, SBOMs, and attestations. Existing
-target tags are revisited so missing referrers can be backfilled. Charts sourced
+target tags are revisited by their immutable digest so missing referrers can be
+backfilled without moving the tag when its upstream tag changes. Charts sourced
 from HTTP Helm repositories do not have an OCI referrer graph to preserve.

@@ -43,13 +43,23 @@ jobs:
           TARGET_PACKAGE: ${{ inputs.target_package }}
           VERSION: ${{ inputs.tag }}
         run: |
-          SOURCE_REF="${SOURCE_IMAGE}:${VERSION}"
+          SOURCE_TAG_REF="${SOURCE_IMAGE}:${VERSION}"
           TARGET_REF="${REGISTRY}/${TARGET_PACKAGE}:${VERSION}"
           MAX_RETRIES=5
           BASE_DELAY=15
 
-          # Do not skip existing tags: recursive copy backfills referrers that
-          # may have been published after the image itself was mirrored.
+          if TARGET_DIGEST=$(regctl image digest "$TARGET_REF" 2>/dev/null); then
+            # Preserve the digest already published under the target tag. The
+            # upstream tag may have moved since it was first mirrored.
+            SOURCE_REF="${SOURCE_IMAGE}@${TARGET_DIGEST}"
+            EXPECTED_DIGEST="$TARGET_DIGEST"
+            echo "Target already exists at ${TARGET_DIGEST}; backfilling referrers from the immutable source digest."
+          else
+            SOURCE_REF="$SOURCE_TAG_REF"
+            EXPECTED_DIGEST=$(regctl image digest "$SOURCE_REF")
+            echo "Target does not exist; mirroring source digest ${EXPECTED_DIGEST}."
+          fi
+
           for i in $(seq 1 $MAX_RETRIES); do
             echo "Attempt $i of $MAX_RETRIES..."
             if regctl image copy --referrers --force-recursive "$SOURCE_REF" "$TARGET_REF"; then
@@ -67,9 +77,8 @@ jobs:
             fi
           done
 
-          SOURCE_DIGEST=$(regctl image digest "$SOURCE_REF")
-          TARGET_DIGEST=$(regctl image digest "$TARGET_REF")
-          if [ "$SOURCE_DIGEST" != "$TARGET_DIGEST" ]; then
-            echo "Mirrored digest $TARGET_DIGEST does not match source digest $SOURCE_DIGEST"
+          MIRRORED_DIGEST=$(regctl image digest "$TARGET_REF")
+          if [ "$MIRRORED_DIGEST" != "$EXPECTED_DIGEST" ]; then
+            echo "Mirrored digest $MIRRORED_DIGEST does not match expected digest $EXPECTED_DIGEST"
             exit 1
           fi
