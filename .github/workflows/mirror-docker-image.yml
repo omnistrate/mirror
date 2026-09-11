@@ -48,20 +48,39 @@ jobs:
           MAX_RETRIES=5
           BASE_DELAY=15
 
-          if TARGET_DIGEST=$(regctl image digest "$TARGET_REF" 2>/dev/null); then
+          if TARGET_DIGEST=$(regctl image digest "$TARGET_REF" 2>&1); then
             # Preserve the digest already published under the target tag. The
             # upstream tag may have moved since it was first mirrored.
             SOURCE_REF="${SOURCE_IMAGE}@${TARGET_DIGEST}"
             EXPECTED_DIGEST="$TARGET_DIGEST"
             echo "Target already exists at ${TARGET_DIGEST}; backfilling referrers from the immutable source digest."
-            if ! regctl image digest "$SOURCE_REF" >/dev/null 2>&1; then
+
+            if SOURCE_DIGEST=$(regctl image digest "$SOURCE_REF" 2>&1); then
+              if [ "$SOURCE_DIGEST" != "$EXPECTED_DIGEST" ]; then
+                echo "::error::Source digest lookup returned ${SOURCE_DIGEST}; expected ${EXPECTED_DIGEST}."
+                exit 1
+              fi
+            elif [[ "$SOURCE_DIGEST" == *"not found [http 404]"* ]]; then
               echo "::warning::Source no longer exposes ${SOURCE_REF}; keeping ${TARGET_REF} unchanged and skipping referrer backfill."
               exit 0
+            else
+              echo "::error::Failed to inspect immutable source ${SOURCE_REF}; refusing to modify ${TARGET_REF}."
+              echo "$SOURCE_DIGEST" >&2
+              exit 1
             fi
-          else
-            SOURCE_REF="$SOURCE_TAG_REF"
-            EXPECTED_DIGEST=$(regctl image digest "$SOURCE_REF")
+          elif [[ "$TARGET_DIGEST" == *"not found [http 404]"* ]]; then
+            if ! EXPECTED_DIGEST=$(regctl image digest "$SOURCE_TAG_REF" 2>&1); then
+              echo "::error::Failed to resolve source tag ${SOURCE_TAG_REF}."
+              echo "$EXPECTED_DIGEST" >&2
+              exit 1
+            fi
+
+            SOURCE_REF="${SOURCE_IMAGE}@${EXPECTED_DIGEST}"
             echo "Target does not exist; mirroring source digest ${EXPECTED_DIGEST}."
+          else
+            echo "::error::Failed to inspect target ${TARGET_REF}; refusing to treat it as absent."
+            echo "$TARGET_DIGEST" >&2
+            exit 1
           fi
 
           for i in $(seq 1 $MAX_RETRIES); do
