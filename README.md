@@ -28,6 +28,7 @@
 - https://quay.io/jetstack/cert-manager-webhook → `cert-manager-webhook` (tags: v1.20.1)
 - https://quay.io/jetstack/cert-manager-cainjector → `cert-manager-cainjector` (tags: v1.20.1)
 - https://quay.io/jetstack/cert-manager-startupapicheck → `cert-manager-startupapicheck` (tags: v1.20.1)
+- https://quay.io/jetstack/cert-manager-acmesolver → `cert-manager-acmesolver` (tags: v1.20.1)
 - https://hub.docker.com/r/nginx/nginx-ingress → `nginx-ingress` (tags: 3.6.2)
 - https://quay.io/prometheus-operator/prometheus-operator → `prometheus-operator` (tags: v0.90.1)
 - https://quay.io/prometheus-operator/prometheus-config-reloader → `prometheus-config-reloader` (tags: v0.90.1)
