@@ -396,6 +396,16 @@ jobs:
       packages: write
       contents: read
 
+  mirror-thanos:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: quay.io/thanos/thanos
+      tag: v0.41.0
+      target_package: ${{ github.repository_owner }}/thanos
+    permissions:
+      packages: write
+      contents: read
+
   mirror-kube-webhook-certgen:
     uses: ./.github/workflows/mirror-docker-image.yml
     with:
