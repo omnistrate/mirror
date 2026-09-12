@@ -336,6 +336,16 @@ jobs:
       packages: write
       contents: read
 
+  mirror-cert-manager-acmesolver:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: quay.io/jetstack/cert-manager-acmesolver
+      tag: v1.20.1
+      target_package: ${{ github.repository_owner }}/cert-manager-acmesolver
+    permissions:
+      packages: write
+      contents: read
+
   mirror-nginx-ingress-controller:
     uses: ./.github/workflows/mirror-docker-image.yml
     with:
