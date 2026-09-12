@@ -33,6 +33,7 @@
 - https://quay.io/prometheus-operator/prometheus-operator → `prometheus-operator` (tags: v0.90.1)
 - https://quay.io/prometheus-operator/prometheus-config-reloader → `prometheus-config-reloader` (tags: v0.90.1)
 - https://quay.io/prometheus/prometheus → `prometheus` (tags: v2.55.1, v3.11.1)
+- https://quay.io/thanos/thanos → `thanos` (tags: v0.41.0)
 - https://github.com/jkroepke/kube-webhook-certgen/pkgs/container/kube-webhook-certgen → `kube-webhook-certgen` (tags: 1.8.0)
 - https://hub.docker.com/r/bats/bats → `bats` (tags: v1.4.1)
 - https://github.com/headlamp-k8s/headlamp/pkgs/container/headlamp → `headlamp` (tags: v0.41.0)
