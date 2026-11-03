@@ -121,6 +121,16 @@ jobs:
       packages: write
       contents: read
 
+  mirror-licensing-example-java:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: ghcr.io/omnistrate-community/licensing-example-java
+      tag: latest
+      target_package: ${{ github.repository_owner }}/licensing-example-java
+    permissions:
+      packages: write
+      contents: read
+
   mirror-nginx-1-25:
     uses: ./.github/workflows/mirror-docker-image.yml
     with:

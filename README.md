@@ -16,6 +16,7 @@
 - https://hub.docker.com/r/grafana/grafana (tags: 11.4.0, 12.3.1)
 - https://hub.docker.com/r/grafana/grafana-image-renderer (tags: latest)
 - https://hub.docker.com/r/nginxdemos/hello → `nginxdemos-hello` (tags: 0.4)
+- https://github.com/omnistrate-community/licensing-example-java/pkgs/container/licensing-example-java → `licensing-example-java` (tags: latest)
 - https://hub.docker.com/r/omnistrate/noop → `noop` (tags: latest)
 - https://hub.docker.com/r/redis/redis-stack-server → `redis-stack-server` (tags: 6.2.6-v7)
 - https://hub.docker.com/r/tomnislav/pg-with-exporter → `pg-with-exporter` (tags: 2.0)
