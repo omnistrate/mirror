@@ -213,6 +213,16 @@ jobs:
       packages: write
       contents: read
 
+  mirror-csi-snapshotter:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: public.ecr.aws/csi-components/csi-snapshotter
+      tag: v8.4.0-eksbuild.3
+      target_package: ${{ github.repository_owner }}/csi-snapshotter
+    permissions:
+      packages: write
+      contents: read
+
   mirror-csi-node-driver-registrar:
     uses: ./.github/workflows/mirror-docker-image.yml
     with:

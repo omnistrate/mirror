@@ -51,6 +51,7 @@
 - https://gallery.ecr.aws/csi-components/csi-attacher → `csi-attacher` (tags: v4.10.0-eksbuild.3)
 - https://gallery.ecr.aws/csi-components/csi-provisioner → `csi-provisioner` (tags: v6.1.0-eksbuild.2)
 - https://gallery.ecr.aws/csi-components/csi-resizer → `csi-resizer` (tags: v2.0.0-eksbuild.3)
+- https://gallery.ecr.aws/csi-components/csi-snapshotter → `csi-snapshotter` (tags: v8.4.0-eksbuild.3)
 - https://gallery.ecr.aws/csi-components/csi-node-driver-registrar → `csi-node-driver-registrar` (tags: v2.15.0-eksbuild.3)
 - https://gallery.ecr.aws/csi-components/livenessprobe → `csi-livenessprobe` (tags: v2.17.0-eksbuild.3)
 - https://gallery.ecr.aws/efs-csi-driver/amazon/aws-efs-csi-driver → `aws-efs-csi-driver` (tags: v2.3.0)
