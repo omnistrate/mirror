@@ -360,7 +360,7 @@ jobs:
     uses: ./.github/workflows/mirror-docker-image.yml
     with:
       source_image: docker.io/nginx/nginx-ingress
-      tag: "3.6.2"
+      tag: "5.8.0"
       target_package: ${{ github.repository_owner }}/nginx-ingress
     permissions:
       packages: write
