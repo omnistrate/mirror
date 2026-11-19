@@ -29,7 +29,7 @@
 - https://quay.io/jetstack/cert-manager-cainjector → `cert-manager-cainjector` (tags: v1.20.1)
 - https://quay.io/jetstack/cert-manager-startupapicheck → `cert-manager-startupapicheck` (tags: v1.20.1)
 - https://quay.io/jetstack/cert-manager-acmesolver → `cert-manager-acmesolver` (tags: v1.20.1)
-- https://hub.docker.com/r/nginx/nginx-ingress → `nginx-ingress` (tags: 3.6.2)
+- https://hub.docker.com/r/nginx/nginx-ingress → `nginx-ingress` (tags: 5.8.0)
 - https://quay.io/prometheus-operator/prometheus-operator → `prometheus-operator` (tags: v0.90.1)
 - https://quay.io/prometheus-operator/prometheus-config-reloader → `prometheus-config-reloader` (tags: v0.90.1)
 - https://quay.io/prometheus/prometheus → `prometheus` (tags: v2.55.1, v3.11.1)
@@ -73,7 +73,7 @@ All at `oci://ghcr.io/omnistrate/charts/`:
 - `cluster-autoscaler` 9.53.0 from `https://kubernetes.github.io/autoscaler`
 - `external-dns` 1.20.0 from `https://kubernetes-sigs.github.io/external-dns`
 - `cert-manager` v1.20.1 from `https://charts.jetstack.io`
-- `nginx-ingress` 1.3.2 from `https://helm.nginx.com/stable`
+- `nginx-ingress` 2.9.0 from `https://helm.nginx.com/stable`
 - `kube-prometheus-stack` 83.4.0 from `https://prometheus-community.github.io/helm-charts`
 - `grafana` 10.5.15 from `https://grafana.github.io/helm-charts`
 - `headlamp` 0.41.0 from `https://kubernetes-sigs.github.io/headlamp`
