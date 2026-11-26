@@ -65,7 +65,7 @@ jobs:
     uses: ./.github/workflows/mirror-docker-image.yml
     with:
       source_image: docker.io/rancher/local-path-provisioner
-      tag: v0.0.31
+      tag: v0.0.37
       target_package: ${{ github.repository_owner }}/local-path-provisioner
     permissions:
       packages: write
@@ -286,11 +286,53 @@ jobs:
   # Dataplane host-cluster amenities. Release assembly consumes these stable
   # GHCR mirrors instead of pulling third-party registries directly.
 
-  mirror-cluster-autoscaler:
+  # Cluster Autoscaler minors must match Kubernetes minors, so managed
+  # releases mirror one image per supported Kubernetes minor.
+  mirror-cluster-autoscaler-k8s-1-33:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: registry.k8s.io/autoscaling/cluster-autoscaler
+      tag: v1.33.0
+      target_package: ${{ github.repository_owner }}/cluster-autoscaler
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-cluster-autoscaler-k8s-1-34:
     uses: ./.github/workflows/mirror-docker-image.yml
     with:
       source_image: registry.k8s.io/autoscaling/cluster-autoscaler
       tag: v1.34.2
+      target_package: ${{ github.repository_owner }}/cluster-autoscaler
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-cluster-autoscaler-k8s-1-35:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: registry.k8s.io/autoscaling/cluster-autoscaler
+      tag: v1.35.0
+      target_package: ${{ github.repository_owner }}/cluster-autoscaler
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-cluster-autoscaler-k8s-1-36:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: registry.k8s.io/autoscaling/cluster-autoscaler
+      tag: v1.36.2
+      target_package: ${{ github.repository_owner }}/cluster-autoscaler
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-cluster-autoscaler-k8s-1-37:
+    uses: ./.github/workflows/mirror-docker-image.yml
+    with:
+      source_image: registry.k8s.io/autoscaling/cluster-autoscaler
+      tag: v1.37.0
       target_package: ${{ github.repository_owner }}/cluster-autoscaler
     permissions:
       packages: write
@@ -360,7 +402,7 @@ jobs:
     uses: ./.github/workflows/mirror-docker-image.yml
     with:
       source_image: docker.io/nginx/nginx-ingress
-      tag: "5.8.0"
+      tag: "5.8.1-alpine"
       target_package: ${{ github.repository_owner }}/nginx-ingress
     permissions:
       packages: write
@@ -490,7 +532,7 @@ jobs:
     uses: ./.github/workflows/mirror-docker-image.yml
     with:
       source_image: docker.io/library/kong
-      tag: "3.9"
+      tag: "3.9.5"
       target_package: ${{ github.repository_owner }}/kong
     permissions:
       packages: write
