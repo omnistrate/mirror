@@ -168,11 +168,46 @@ jobs:
       packages: write
       contents: read
 
-  mirror-cluster-autoscaler-chart:
+  # Managed releases mirror one Cluster Autoscaler chart per supported
+  # Kubernetes minor; 1.36 reuses the 1.37 chart with its own image.
+  mirror-cluster-autoscaler-chart-k8s-1-33:
+    uses: ./.github/workflows/mirror-helm-chart.yml
+    with:
+      chart_name: cluster-autoscaler
+      chart_version: "9.51.0"
+      chart_repo_url: https://kubernetes.github.io/autoscaler
+      target_package: ${{ github.repository_owner }}/charts
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-cluster-autoscaler-chart-k8s-1-34:
     uses: ./.github/workflows/mirror-helm-chart.yml
     with:
       chart_name: cluster-autoscaler
       chart_version: "9.53.0"
+      chart_repo_url: https://kubernetes.github.io/autoscaler
+      target_package: ${{ github.repository_owner }}/charts
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-cluster-autoscaler-chart-k8s-1-35:
+    uses: ./.github/workflows/mirror-helm-chart.yml
+    with:
+      chart_name: cluster-autoscaler
+      chart_version: "9.59.0"
+      chart_repo_url: https://kubernetes.github.io/autoscaler
+      target_package: ${{ github.repository_owner }}/charts
+    permissions:
+      packages: write
+      contents: read
+
+  mirror-cluster-autoscaler-chart-k8s-1-36-and-1-37:
+    uses: ./.github/workflows/mirror-helm-chart.yml
+    with:
+      chart_name: cluster-autoscaler
+      chart_version: "9.60.0"
       chart_repo_url: https://kubernetes.github.io/autoscaler
       target_package: ${{ github.repository_owner }}/charts
     permissions:
@@ -205,7 +240,7 @@ jobs:
     uses: ./.github/workflows/mirror-helm-chart.yml
     with:
       chart_name: nginx-ingress
-      chart_version: "2.9.0"
+      chart_version: "2.9.1"
       chart_repo_url: https://helm.nginx.com/stable
       target_package: ${{ github.repository_owner }}/charts
     permissions:
